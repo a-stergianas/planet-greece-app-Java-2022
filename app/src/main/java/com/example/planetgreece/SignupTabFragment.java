@@ -10,9 +10,9 @@ import androidx.fragment.app.Fragment;
 
 public class SignupTabFragment extends Fragment {
 
-    EditText firstname,lastname,email_signup, password_signup;
+    EditText firstname, lastname, email_signup, password_signup;
     Button signup;
-    float v=0;
+    float v = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -12,7 +12,7 @@ public class LoginTabFragment extends Fragment {
 
     EditText email_login, password_login;
     Button login;
-    float v=0;
+    float v = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -20,7 +20,7 @@ public class LoginAdapter extends FragmentPagerAdapter {
         return totalTabs;
     }
 
-    public Fragment getItem(int position){
+    public Fragment getItem(int position) {
         switch (position){
             case 0:
                 LoginTabFragment loginTabFragment = new LoginTabFragment();
