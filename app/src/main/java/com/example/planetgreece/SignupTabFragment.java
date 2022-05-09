@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 
 public class SignupTabFragment extends Fragment {
@@ -41,6 +43,13 @@ public class SignupTabFragment extends Fragment {
         email_signup.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(700).start();
         password_signup.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(500).start();
         signup.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(700).start();
+
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Signup button clicked", Toast.LENGTH_LONG).show();
+            }
+        });
 
         return root;
     }

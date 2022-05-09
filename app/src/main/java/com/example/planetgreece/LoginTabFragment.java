@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 
 public class LoginTabFragment extends Fragment {
@@ -33,6 +35,12 @@ public class LoginTabFragment extends Fragment {
         email_login.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(300).start();
         password_login.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(500).start();
         login.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(700).start();
+
+        login.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "Login button clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         return root;
     }
