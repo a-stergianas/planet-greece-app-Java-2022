@@ -17,13 +17,16 @@
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/app/src/main/res/layout/signup_tab_fragment.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.186" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.186" />
+        <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/activity_login.xml" value="0.27717391304347827" />
+        <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/login_tab_fragment.xml" value="0.27717391304347827" />
+        <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/signup_tab_fragment.xml" value="0.1707193515704154" />
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/activity_login.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/login_tab_fragment.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/signup_tab_fragment.xml" value="0.3333333333333333" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
