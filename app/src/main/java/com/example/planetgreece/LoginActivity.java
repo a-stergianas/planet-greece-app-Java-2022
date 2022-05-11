@@ -1,6 +1,7 @@
 package com.example.planetgreece;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -8,10 +9,9 @@ import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends AppCompatActivity {
 
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    FloatingActionButton google, fb, twitter;
-    float v = 0;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private FloatingActionButton google, fb, twitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,39 +24,21 @@ public class LoginActivity extends AppCompatActivity {
         fb = findViewById(R.id.fabFacebook);
         twitter = findViewById(R.id.fabTwitter);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Login"));
-        tabLayout.addTab(tabLayout.newTab().setText("Sign up"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        final LoginAdapter adapter = new LoginAdapter(getSupportFragmentManager(), this, tabLayout.getTabCount());
+        tabLayout.setupWithViewPager(viewPager);
+        LoginAdapter adapter = new LoginAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        adapter.addFragment(new LoginTabFragment(), "Login");
+        adapter.addFragment(new SignupTabFragment(), "Sign Up");
         viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                // do nothing
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                // do nothing
-            }
-        });
 
         google.setTranslationY(300);
         fb.setTranslationY(300);
         twitter.setTranslationY(300);
         tabLayout.setTranslationY(300);
 
-        google.setAlpha(v);
-        fb.setAlpha(v);
-        twitter.setAlpha(v);
-        tabLayout.setAlpha(v);
+        google.setAlpha(0f);
+        fb.setAlpha(0f);
+        twitter.setAlpha(0f);
+        tabLayout.setAlpha(0f);
 
         google.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(400).start();
         fb.animate().translationY(0).alpha(1).setDuration(1000).setStartDelay(600).start();

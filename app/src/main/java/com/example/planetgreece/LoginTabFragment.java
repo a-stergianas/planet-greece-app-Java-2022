@@ -14,7 +14,6 @@ public class LoginTabFragment extends Fragment {
 
     EditText email_login, password_login;
     Button login;
-    float v = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -28,9 +27,9 @@ public class LoginTabFragment extends Fragment {
         password_login.setTranslationY(800);
         login.setTranslationY(800);
 
-        email_login.setAlpha(v);
-        password_login.setAlpha(v);
-        login.setAlpha(v);
+        email_login.setAlpha(0f);
+        password_login.setAlpha(0f);
+        login.setAlpha(0f);
 
         email_login.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(300).start();
         password_login.animate().translationY(0).alpha(1).setDuration(800).setStartDelay(500).start();
