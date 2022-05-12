@@ -1,4 +1,4 @@
-package com.example.planetgreece;
+package com.example.planetgreece.fragment.Login;
 
 import android.database.DatabaseUtils;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.R;
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
@@ -65,8 +66,6 @@ public class SignupTabFragment extends Fragment {
                 user.setSalt(Helper.generateRandomString(32));
                 user.setPassword(Helper.encryptPassword(password, user.getSalt()));
                 user.setIsAdmin(false);
-
-                System.out.println(user.getEmail() + " " + user.getPassword() + " " + user.getSalt());
 
                 long id = db.createUser(user);
                 if (id != -1) {

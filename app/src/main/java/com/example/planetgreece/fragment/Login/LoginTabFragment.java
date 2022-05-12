@@ -1,4 +1,4 @@
-package com.example.planetgreece;
+package com.example.planetgreece.fragment.Login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.MainActivity;
+import com.example.planetgreece.R;
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
@@ -55,8 +57,6 @@ public class LoginTabFragment extends Fragment {
 //                Toast.makeText(getContext(), "Login button clicked", Toast.LENGTH_SHORT).show();
                 String email = email_login.getText().toString();
                 String password = password_login.getText().toString();
-
-                System.out.println(email + " " + password);
 
                 if (email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();

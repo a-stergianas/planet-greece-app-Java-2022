@@ -10,6 +10,11 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.planetgreece.db.model.User;
+import com.example.planetgreece.fragment.Login.LoginTabFragment;
+import com.example.planetgreece.fragment.Main.HomeFragment;
+import com.example.planetgreece.fragment.Main.ProfileFragment;
+import com.example.planetgreece.fragment.Main.SavedFragment;
+import com.example.planetgreece.fragment.Main.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -23,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
-//        System.out.println(user.getEmail());
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         getSupportFragmentManager().beginTransaction().replace(R.id.mainConstaint, HomeFragment.newInstance(user)).commit();
@@ -39,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
 //                        fragment = HomeFragment.newInstance(user);
 //                        break;
                     case R.id.navSaved:
-                        fragment = new SavedFragment();
+                        fragment = SavedFragment.newInstance(user);
                         break;
                     case R.id.navProfile:
-                        fragment = new ProfileFragment();
+                        fragment = ProfileFragment.newInstance(user);
                         break;
                     case R.id.navSettings:
-                        fragment = new SettingsFragment();
+                        fragment = SettingsFragment.newInstance(user);
                         break;
                     default:
                         fragment = HomeFragment.newInstance(user);
