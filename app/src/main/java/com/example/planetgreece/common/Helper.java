@@ -48,4 +48,9 @@ public class Helper {
     public static String encryptPassword(String password, String salt) {
         return md5(md5(password) + salt);
     }
+
+    public static boolean isEmailValid(String email) {
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return email.matches(regex);
+    }
 }

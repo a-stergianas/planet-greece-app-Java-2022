@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DB_VERSION = 8;
+    private static DatabaseHelper instance;
+
+    private static final int DB_VERSION = 1;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -104,6 +107,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
+    }
+
     @SuppressLint("Range")
     public User getUser(long id) {
         SQLiteDatabase db = getReadableDatabase();
@@ -128,16 +136,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean userExists(String email) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = '%s'", TABLE_USERS, USERS_EMAIL, email);
+
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = %s",
+                TABLE_USERS,
+                USERS_EMAIL,
+                DatabaseUtils.sqlEscapeString(email)
+        );
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
         int cursorCount = c.getCount();
         c.close();
 
-        if (cursorCount > 0) {
+        if (cursorCount > 0)
             return true;
-        }
 
         return false;
     }
@@ -145,7 +157,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public User getUser(String email) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = '%s'", TABLE_USERS, USERS_EMAIL, email);
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %s",
+                TABLE_USERS,
+                USERS_EMAIL,
+                DatabaseUtils.sqlEscapeString(email)
+        );
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
@@ -210,6 +226,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public long createUser(User user) {
+        if (userExists(user.getEmail())) {
+            System.out.println("User already exists");
+            return -1;
+        }
+
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -282,6 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public boolean checkLogin(String email, String password) {
         if (!userExists(email)) {
+            System.out.println("User does not exist.");
             return false;
         }
 
@@ -289,10 +311,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         User u = getUser(email);
 
-        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = '%s' AND %s = '%s'",
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = %s AND %s = '%s'",
                 TABLE_USERS,
                 USERS_EMAIL,
-                email,
+                DatabaseUtils.sqlEscapeString(email),
                 USERS_PASSWORD,
                 Helper.encryptPassword(password, u.getSalt())
         );
@@ -302,9 +324,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int cursorCount = c.getCount();
         c.close();
 
-        if (cursorCount > 0) {
+        if (cursorCount > 0)
             return true;
-        }
 
         return false;
     }
@@ -320,5 +341,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public static synchronized DatabaseHelper getInstance(Context ctx) {
+        if (instance == null)
+            instance = new DatabaseHelper(ctx.getApplicationContext());
+        return instance;
     }
 }

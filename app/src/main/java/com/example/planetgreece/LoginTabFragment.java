@@ -16,7 +16,6 @@ import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 
 public class LoginTabFragment extends Fragment {
-
     DatabaseHelper db;
 
     public static final String USER_OBJECT = "com.example.planetgreece.USER_OBJECT";
@@ -28,19 +27,19 @@ public class LoginTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        db = new DatabaseHelper(getContext());
+        db = DatabaseHelper.getInstance(getContext());
 
-        User user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setEmail("admin@admin.com");
-        user.setSalt(Helper.generateRandomString(32));
-        user.setPassword(Helper.encryptPassword("admin", user.getSalt()));
-        user.setIsAdmin(true);
-
-        if (!db.userExists(user.getEmail())) {
-            db.createUser(user);
-        }
+//        User user = new User();
+//        user.setFirstName("John");
+//        user.setLastName("Doe");
+//        user.setEmail("admin@admin.com");
+//        user.setSalt(Helper.generateRandomString(32));
+//        user.setPassword(Helper.encryptPassword("admin", user.getSalt()));
+//        user.setIsAdmin(true);
+//
+//        if (!db.userExists(user.getEmail())) {
+//            db.createUser(user);
+//        }
     }
 
     @Override
@@ -69,6 +68,17 @@ public class LoginTabFragment extends Fragment {
                 String email = email_login.getText().toString();
                 String password = password_login.getText().toString();
 
+                if (email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!Helper.isEmailValid(email)) {
+                    Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // TODO: For some reason it keeps not finding the user.
                 if (db.checkLogin(email, password)) {
                     User user = db.getUser(email);
 
@@ -79,7 +89,7 @@ public class LoginTabFragment extends Fragment {
                     startActivity(intent);
 //                getActivity().finish();
                 } else {
-                    Toast.makeText(getContext(), "User doesn't exist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -11,6 +11,8 @@ import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends AppCompatActivity {
 
+    DatabaseHelper db;
+
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private FloatingActionButton google, fb, twitter;
@@ -19,6 +21,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        db = DatabaseHelper.getInstance(getApplicationContext());
 
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
