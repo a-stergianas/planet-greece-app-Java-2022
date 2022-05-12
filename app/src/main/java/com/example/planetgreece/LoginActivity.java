@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 
 import com.example.planetgreece.db.DatabaseHelper;
+import com.example.planetgreece.db.model.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -23,6 +24,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         db = DatabaseHelper.getInstance(getApplicationContext());
+
+        for (int i=0; i < db.getUsers().size(); i++) {
+            User user = db.getUsers().get(i);
+            System.out.println(user.getEmail());
+        }
 
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);

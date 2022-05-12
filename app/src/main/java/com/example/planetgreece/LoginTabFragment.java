@@ -29,6 +29,12 @@ public class LoginTabFragment extends Fragment {
 
         db = DatabaseHelper.getInstance(getContext());
 
+        System.out.println("LoginTabFragment.onCreate()");
+        for (int i=0; i < db.getUsers().size(); i++) {
+            User user = db.getUsers().get(i);
+            System.out.println(user.getEmail());
+        }
+
 //        User user = new User();
 //        user.setFirstName("John");
 //        user.setLastName("Doe");
@@ -68,6 +74,8 @@ public class LoginTabFragment extends Fragment {
                 String email = email_login.getText().toString();
                 String password = password_login.getText().toString();
 
+                System.out.println(email + " " + password);
+
                 if (email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     return;
@@ -78,7 +86,7 @@ public class LoginTabFragment extends Fragment {
                     return;
                 }
 
-                // TODO: For some reason it keeps not finding the user.
+                // TODO: For some reason it keeps returning that the user does not exist.
                 if (db.checkLogin(email, password)) {
                     User user = db.getUser(email);
 
