@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 4;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -49,7 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "%s TEXT," +
                     "%s TEXT," +
-                    "%s TEXT" +
+                    "%s TEXT," +
                     "%s INTEGER DEFAULT 0," +
                     "%s DATETIME" +
                 ")",
@@ -108,7 +108,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             c.moveToFirst();
 
         User user = new User();
-        assert c != null;
+
         user.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
         user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));

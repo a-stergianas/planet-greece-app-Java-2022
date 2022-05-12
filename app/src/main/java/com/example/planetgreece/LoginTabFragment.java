@@ -26,6 +26,7 @@ public class LoginTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         db = new DatabaseHelper(getContext());
 
         com.example.planetgreece.db.model.User user = new com.example.planetgreece.db.model.User();
