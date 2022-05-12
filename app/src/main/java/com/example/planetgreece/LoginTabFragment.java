@@ -1,16 +1,20 @@
 package com.example.planetgreece;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.dto.User;
+
 public class LoginTabFragment extends Fragment {
+
+    public static final String USER_OBJECT = "com.example.planetgreece.USER_OBJECT";
 
     EditText email_login, password_login;
     Button login;
@@ -37,7 +41,17 @@ public class LoginTabFragment extends Fragment {
 
         login.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Login button clicked", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Login button clicked", Toast.LENGTH_SHORT).show();
+                String email = email_login.getText().toString();
+                String password = password_login.getText().toString();
+
+                User user = new User("Stam", "Theod", email);
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(USER_OBJECT, user);
+
+                startActivity(intent);
+//                getActivity().finish();
             }
         });
 
