@@ -28,24 +28,6 @@ public class LoginTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         db = DatabaseHelper.getInstance(getContext());
-
-        System.out.println("LoginTabFragment.onCreate()");
-        for (int i=0; i < db.getUsers().size(); i++) {
-            User user = db.getUsers().get(i);
-            System.out.println(user.getEmail());
-        }
-
-//        User user = new User();
-//        user.setFirstName("John");
-//        user.setLastName("Doe");
-//        user.setEmail("admin@admin.com");
-//        user.setSalt(Helper.generateRandomString(32));
-//        user.setPassword(Helper.encryptPassword("admin", user.getSalt()));
-//        user.setIsAdmin(true);
-//
-//        if (!db.userExists(user.getEmail())) {
-//            db.createUser(user);
-//        }
     }
 
     @Override
@@ -86,7 +68,6 @@ public class LoginTabFragment extends Fragment {
                     return;
                 }
 
-                // TODO: For some reason it keeps returning that the user does not exist.
                 if (db.checkLogin(email, password)) {
                     User user = db.getUser(email);
 

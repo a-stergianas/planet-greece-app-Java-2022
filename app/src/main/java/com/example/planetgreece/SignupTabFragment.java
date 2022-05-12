@@ -59,9 +59,9 @@ public class SignupTabFragment extends Fragment {
                 }
 
                 User user = new User();
-                user.setFirstName(DatabaseUtils.sqlEscapeString(firstName));
-                user.setLastName(DatabaseUtils.sqlEscapeString(lastName));
-                user.setEmail(DatabaseUtils.sqlEscapeString(email));
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setEmail(email);
                 user.setSalt(Helper.generateRandomString(32));
                 user.setPassword(Helper.encryptPassword(password, user.getSalt()));
                 user.setIsAdmin(false);
