@@ -7,17 +7,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.dto.User;
 
 public class LoginTabFragment extends Fragment {
+
+    DatabaseHelper db;
 
     public static final String USER_OBJECT = "com.example.planetgreece.USER_OBJECT";
 
     EditText email_login, password_login;
     Button login;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        db = new DatabaseHelper(getContext());
+
+        com.example.planetgreece.db.model.User user = new com.example.planetgreece.db.model.User();
+        user.setFirstName("Stam");
+        user.setLastName("Theod");
+        user.setEmail("stam@stam.com");
+        user.setIsAdmin(true);
+
+        if (!db.userExists(user.getEmail())) {
+            db.createUser(user);
+        }
+
+        for (int i = 0; i < db.getUsers().size(); i++) {
+            System.out.println(db.getUsers().get(i).getEmail());
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,12 +70,18 @@ public class LoginTabFragment extends Fragment {
                 String password = password_login.getText().toString();
 
                 User user = new User("Stam", "Theod", email);
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra(USER_OBJECT, user);
 
-                startActivity(intent);
+                if (db.userExists(email)) {
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra(USER_OBJECT, user);
+
+                    startActivity(intent);
 //                getActivity().finish();
+                } else {
+                    Toast.makeText(getContext(), "User doesn't exist", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
