@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.db.model.User;
 
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 8;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -33,13 +34,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String USERS_FIRSTNAME = "firstname";
     private static final String USERS_LASTNAME = "lastname";
     private static final String USERS_EMAIL = "email";
-    private static final String USERS_ISADMIN = "isadmin";
+    private static final String USERS_PASSWORD = "password";
+    private static final String USERS_SALT = "salt";
+    private static final String USERS_IS_ADMIN = "is_admin";
 
     // ARTICLES
     private static final String ARTICLES_TITLE = "title";
     private static final String ARTICLES_CONTENT = "content";
     private static final String ARTICLES_IMAGE = "image";
-    private static final String ARTICLES_SITENAME = "sitename";
+    private static final String ARTICLES_SITE_NAME = "site_name";
     private static final String ARTICLES_LINK = "link";
 
     // Create tables
@@ -47,6 +50,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String.format("CREATE TABLE %s" +
                 "(" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s TEXT," +
+                    "%s TEXT," +
                     "%s TEXT," +
                     "%s TEXT," +
                     "%s TEXT," +
@@ -58,7 +63,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     USERS_FIRSTNAME,
                     USERS_LASTNAME,
                     USERS_EMAIL,
-                    USERS_ISADMIN,
+                    USERS_PASSWORD,
+                    USERS_SALT,
+                    USERS_IS_ADMIN,
                     KEY_CREATED_AT);
 
     private static final String CREATE_TABLE_ARTICLES =
@@ -76,7 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ARTICLES_TITLE,
                     ARTICLES_CONTENT,
                     ARTICLES_IMAGE,
-                    ARTICLES_SITENAME,
+                    ARTICLES_SITE_NAME,
                     ARTICLES_LINK);
 
     public DatabaseHelper(Context context) {
@@ -113,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
         user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
         user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
-        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_ISADMIN)) == 1);
+        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         return user;
@@ -127,7 +134,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         int cursorCount = c.getCount();
         c.close();
-        db.close();
 
         if (cursorCount > 0) {
             return true;
@@ -139,7 +145,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public User getUser(String email) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", TABLE_USERS, USERS_EMAIL, email);
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = '%s'", TABLE_USERS, USERS_EMAIL, email);
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
@@ -154,11 +160,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
         user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
         user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
-        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_ISADMIN)) == 1);
+//        user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
+        user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
+        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
-        db.close();
 
         return user;
     }
@@ -179,7 +186,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
                 user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
                 user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
-                user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_ISADMIN)) == 1);
+//                user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
+                user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
+                user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
                 user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 users.add(user);
@@ -187,7 +196,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         c.close();
-        db.close();
 
         return users;
     }
@@ -199,7 +207,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        Cursor c = db.rawQuery(query, null);
 
         db.delete(TABLE_USERS, KEY_ID + " = ?", new String[] { String.valueOf(id) });
-        db.close();
     }
 
     public long createUser(User user) {
@@ -209,13 +216,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_FIRSTNAME, user.getFirstName());
         values.put(USERS_LASTNAME, user.getLastName());
         values.put(USERS_EMAIL, user.getEmail());
-        values.put(USERS_ISADMIN, user.getIsAdmin());
+        values.put(USERS_PASSWORD, user.getPassword());
+        values.put(USERS_SALT, user.getSalt());
+        values.put(USERS_IS_ADMIN, user.getIsAdmin());
 //        values.put(KEY_CREATED_AT, "datetime('now')");
         values.put(KEY_CREATED_AT, getDateTime());
 
         long id = db.insert(TABLE_USERS, null, values);
-
-        db.close();
 
         return id;
     }
@@ -235,12 +242,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
         article.setContent(c.getString(c.getColumnIndex(ARTICLES_CONTENT)));
         article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
-        article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITENAME)));
+        article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
         article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
         article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
-        db.close();
 
         return article;
     }
@@ -261,7 +267,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
                 article.setContent(c.getString(c.getColumnIndex(ARTICLES_CONTENT)));
                 article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
-                article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITENAME)));
+                article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
                 article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
                 article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
@@ -270,9 +276,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         c.close();
-        db.close();
 
         return articles;
+    }
+
+    public boolean checkLogin(String email, String password) {
+        if (!userExists(email)) {
+            return false;
+        }
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        User u = getUser(email);
+
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = '%s' AND %s = '%s'",
+                TABLE_USERS,
+                USERS_EMAIL,
+                email,
+                USERS_PASSWORD,
+                Helper.encryptPassword(password, u.getSalt())
+        );
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        int cursorCount = c.getCount();
+        c.close();
+
+        if (cursorCount > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public void closeDb() {

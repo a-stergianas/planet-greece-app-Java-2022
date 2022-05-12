@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.planetgreece.dto.User;
+import com.example.planetgreece.db.model.User;
 
 /**
  * A simple {@link Fragment} subclass.

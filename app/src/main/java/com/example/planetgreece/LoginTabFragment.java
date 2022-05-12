@@ -11,8 +11,9 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
-import com.example.planetgreece.dto.User;
+import com.example.planetgreece.db.model.User;
 
 public class LoginTabFragment extends Fragment {
 
@@ -29,18 +30,16 @@ public class LoginTabFragment extends Fragment {
 
         db = new DatabaseHelper(getContext());
 
-        com.example.planetgreece.db.model.User user = new com.example.planetgreece.db.model.User();
-        user.setFirstName("Stam");
-        user.setLastName("Theod");
-        user.setEmail("stam@stam.com");
+        User user = new User();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        user.setEmail("admin@admin.com");
+        user.setSalt(Helper.generateRandomString(32));
+        user.setPassword(Helper.encryptPassword("admin", user.getSalt()));
         user.setIsAdmin(true);
 
         if (!db.userExists(user.getEmail())) {
             db.createUser(user);
-        }
-
-        for (int i = 0; i < db.getUsers().size(); i++) {
-            System.out.println(db.getUsers().get(i).getEmail());
         }
     }
 
@@ -70,9 +69,9 @@ public class LoginTabFragment extends Fragment {
                 String email = email_login.getText().toString();
                 String password = password_login.getText().toString();
 
-                User user = new User("Stam", "Theod", email);
+                if (db.checkLogin(email, password)) {
+                    User user = db.getUser(email);
 
-                if (db.userExists(email)) {
                     Intent intent = new Intent(getContext(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra(USER_OBJECT, user);
