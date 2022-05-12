@@ -26,17 +26,18 @@ public class MainActivity extends AppCompatActivity {
 //        System.out.println(user.getEmail());
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        getSupportFragmentManager().beginTransaction().replace(R.id.mainConstaint, new HomeFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.mainConstaint, HomeFragment.newInstance(user)).commit();
         bottomNavigationView.setSelectedItemId(R.id.navHome);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment fragment = null;
+
                 switch (item.getItemId()){
-                    case R.id.navHome:
-                        fragment = HomeFragment.newInstance(user);
-                        break;
+//                    case R.id.navHome:
+//                        fragment = HomeFragment.newInstance(user);
+//                        break;
                     case R.id.navSaved:
                         fragment = new SavedFragment();
                         break;
@@ -46,8 +47,17 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navSettings:
                         fragment = new SettingsFragment();
                         break;
+                    default:
+                        fragment = HomeFragment.newInstance(user);
+                        break;
                 }
-                getSupportFragmentManager().beginTransaction().replace(R.id.mainConstaint, fragment).commit();
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.mainConstaint, fragment)
+                        .commit();
+
                 return true;
             }
         });

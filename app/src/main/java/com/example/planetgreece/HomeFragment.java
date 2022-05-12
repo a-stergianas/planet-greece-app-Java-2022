@@ -48,6 +48,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        if (savedInstanceState != null)
+//            return;
+
         if (getArguments() != null) {
 //            param2 = getArguments().getString(ARG_PARAM2);
             mUser = (User) getArguments().getSerializable(ARG_PARAM1);
