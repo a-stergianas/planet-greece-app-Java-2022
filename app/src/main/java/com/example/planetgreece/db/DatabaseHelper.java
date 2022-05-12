@@ -112,6 +112,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
+    /**********************************************************************************************
+     * USERS TABLE METHODS
+     **********************************************************************************************/
+
     @SuppressLint("Range")
     public User getUser(long id) {
         SQLiteDatabase db = getReadableDatabase();
@@ -119,8 +123,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        if (c != null)
-            c.moveToFirst();
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
 
         User user = new User();
 
@@ -165,8 +172,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        if (c != null)
-            c.moveToFirst();
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
 
         if (c.getCount() == 0)
             return null;
@@ -193,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         if (c.moveToFirst()) {
             do {
@@ -248,6 +258,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public void updateUser(User user) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_FIRSTNAME, user.getFirstName());
+        values.put(USERS_LASTNAME, user.getLastName());
+        values.put(USERS_EMAIL, user.getEmail());
+        values.put(USERS_IS_ADMIN, user.getIsAdmin());
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(user.getId()) });
+    }
+
+    /**********************************************************************************************
+     * ARTICLES TABLE METHODS
+     **********************************************************************************************/
+
     @SuppressLint("Range")
     public Article getArticle(long id) {
         SQLiteDatabase db = getReadableDatabase();
@@ -255,8 +281,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        if (c != null)
-            c.moveToFirst();
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
 
         Article article = new Article();
         article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
@@ -279,7 +308,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        List<Article> articles = new ArrayList<Article>();
+        List<Article> articles = new ArrayList<>();
 
         if (c.moveToFirst()) {
             do {
@@ -300,6 +329,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return articles;
     }
+
+    /**********************************************************************************************
+     * MISC FUNCTIONS
+     **********************************************************************************************/
+
+    public void closeDb() {
+        SQLiteDatabase db = getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
+    }
+
+    private String getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
+
+    public static synchronized DatabaseHelper getInstance(Context ctx) {
+        if (instance == null)
+            instance = new DatabaseHelper(ctx.getApplicationContext());
+        return instance;
+    }
+
+    /**********************************************************************************************
+     * DATABASE RELATED FUNCTIONS
+     **********************************************************************************************/
 
     public boolean checkLogin(String email, String password) {
         if (!userExists(email)) {
@@ -328,24 +384,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
 
         return false;
-    }
-
-    public void closeDb() {
-        SQLiteDatabase db = getReadableDatabase();
-        if (db != null && db.isOpen())
-            db.close();
-    }
-
-    private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
-
-    public static synchronized DatabaseHelper getInstance(Context ctx) {
-        if (instance == null)
-            instance = new DatabaseHelper(ctx.getApplicationContext());
-        return instance;
     }
 }

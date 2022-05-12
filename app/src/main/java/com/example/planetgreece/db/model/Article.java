@@ -15,14 +15,6 @@ public class Article implements Serializable {
 
     }
 
-    public Article(String title, String content, String image, String siteName, String link) {
-        this.title = title;
-        this.content = content;
-        this.image = image;
-        this.siteName = siteName;
-        this.link = link;
-    }
-
     public int getId() {
         return id;
     }
