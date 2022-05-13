@@ -214,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
 //                user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
                 user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
-                user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
+                user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
                 user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 users.add(user);
