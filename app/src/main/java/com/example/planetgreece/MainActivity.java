@@ -3,13 +3,14 @@ package com.example.planetgreece;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import com.example.planetgreece.db.model.User;
+import com.example.planetgreece.fragment.ArticleAdapter;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
 import com.example.planetgreece.fragment.Main.HomeFragment;
 import com.example.planetgreece.fragment.Main.ProfileFragment;
@@ -18,13 +19,23 @@ import com.example.planetgreece.fragment.Main.SettingsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
+
+    private ArrayList<Article> articleList;
+    private RecyclerView recyclerView;
     BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.fragment_home);
+
+        articleList = new ArrayList<>();
+        recyclerView = findViewById(R.id.rvArticles);
+        setArticlesInfo();
+        setArticleAdapter();
 
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
@@ -66,4 +77,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setArticlesInfo() {
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+    }
+
+    private void setArticleAdapter() {
+        ArticleAdapter adapter = new ArticleAdapter(articleList);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
 }

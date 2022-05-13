@@ -1,18 +1,24 @@
-package com.example.planetgreece.db.model;
+package com.example.planetgreece;
+
+import com.example.planetgreece.R;
 
 import java.io.Serializable;
 
 public class Article implements Serializable {
     private int id;
     private String title;
-    private String content;
-    private String image;
+    private String content; //νομίζω δεν μας χρειάζεται (αχιλλ)
+    private int image;
     private String siteName;
     private String link;
     private String createdAt;
 
     public Article() {
-
+        title = "Θωμάς ο… Survivor!";
+        image = Integer.valueOf(R.drawable.article_image);
+        siteName = "Αρκτούρος";
+        link = "https://www.arcturos.gr/news/thomassurvivor/";
+        createdAt = "10.05.2022";
     }
 
     public int getId() {
@@ -27,7 +33,7 @@ public class Article implements Serializable {
         return content;
     }
 
-    public String getImage() {
+    public int getImage() {
         return image;
     }
 
@@ -56,7 +62,7 @@ public class Article implements Serializable {
     }
 
     public void setImage(String image) {
-        this.image = image;
+        //this.image = image;
     }
 
     public void setSiteName(String siteName) {

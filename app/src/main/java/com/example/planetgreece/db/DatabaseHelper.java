@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.planetgreece.common.Helper;
-import com.example.planetgreece.db.model.Article;
+import com.example.planetgreece.Article;
 import com.example.planetgreece.db.model.User;
 
 import java.text.SimpleDateFormat;
