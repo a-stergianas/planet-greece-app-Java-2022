@@ -3,13 +3,19 @@ package com.example.planetgreece.fragment.Main;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.planetgreece.Article;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.model.User;
+import com.example.planetgreece.fragment.ArticleAdapter;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,6 +23,9 @@ import com.example.planetgreece.db.model.User;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
+
+    private ArrayList<Article> articleList;
+    private RecyclerView recyclerView;
 
     private static final String ARG_USER = "param1";
 
@@ -45,6 +54,8 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        articleList = new ArrayList<>();
+
 //        if (savedInstanceState != null)
 //            return;
 
@@ -57,7 +68,28 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        recyclerView = view.findViewById(R.id.rvArticles);
+
+        setArticlesInfo();
+        setArticleAdapter();
+
+        return view;
+    }
+
+    private void setArticlesInfo() {
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+        articleList.add(new Article());
+    }
+
+    private void setArticleAdapter() {
+        ArticleAdapter adapter = new ArticleAdapter(articleList);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 }

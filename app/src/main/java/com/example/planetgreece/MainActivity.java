@@ -22,20 +22,12 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ArrayList<Article> articleList;
-    private RecyclerView recyclerView;
     BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_home);
-
-        articleList = new ArrayList<>();
-        recyclerView = findViewById(R.id.rvArticles);
-        setArticlesInfo();
-        setArticleAdapter();
+        setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
@@ -76,21 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-    }
-
-    private void setArticlesInfo() {
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
-    }
-
-    private void setArticleAdapter() {
-        ArticleAdapter adapter = new ArticleAdapter(articleList);
-
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
 }
