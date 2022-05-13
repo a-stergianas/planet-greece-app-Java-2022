@@ -188,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
 //        user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
         user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
-        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
+        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
@@ -249,7 +249,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_EMAIL, user.getEmail());
         values.put(USERS_PASSWORD, user.getPassword());
         values.put(USERS_SALT, user.getSalt());
-        values.put(USERS_IS_ADMIN, user.getIsAdmin());
+        values.put(USERS_IS_ADMIN, user.getIsAdmin() ? 1 : 0);
 //        values.put(KEY_CREATED_AT, "datetime('now')");
         values.put(KEY_CREATED_AT, getDateTime());
 
