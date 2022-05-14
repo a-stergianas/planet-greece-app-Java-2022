@@ -1,4 +1,4 @@
-package com.example.planetgreece.fragment;
+package com.example.planetgreece.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,17 +8,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.planetgreece.R;
-import com.example.planetgreece.Article;
+import com.example.planetgreece.db.model.Article;
 
 import java.util.ArrayList;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
 
-    //Context context;
     private ArrayList<Article> articlesList;
 
-    public ArticleAdapter(/*Context context,*/ ArrayList<Article> articlesList) {
-        //this.context = context;
+    public ArticleAdapter(ArrayList<Article> articlesList) {
         this.articlesList = articlesList;
     }
 

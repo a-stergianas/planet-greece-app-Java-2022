@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.planetgreece.R;
+import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 
 /**
@@ -17,6 +18,8 @@ import com.example.planetgreece.db.model.User;
  * create an instance of this fragment.
  */
 public class SavedFragment extends Fragment {
+    DatabaseHelper db;
+
     private static final String ARG_USER = "param1";
 
     private User mUser;
@@ -43,6 +46,9 @@ public class SavedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = DatabaseHelper.getInstance(getContext());
+
         if (getArguments() != null) {
             mUser = (User) getArguments().getSerializable(ARG_USER);
         }
@@ -52,6 +58,8 @@ public class SavedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_saved, container, false);
+        View view = inflater.inflate(R.layout.fragment_saved, container, false);
+
+        return view;
     }
 }

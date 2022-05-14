@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.planetgreece.Article;
+import com.example.planetgreece.db.DatabaseHelper;
+import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.model.User;
-import com.example.planetgreece.fragment.ArticleAdapter;
+import com.example.planetgreece.adapter.ArticleAdapter;
 
 import java.util.ArrayList;
 
@@ -23,13 +24,14 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
-
-    private ArrayList<Article> articleList;
-    private RecyclerView recyclerView;
+    DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
 
     private User mUser;
+
+    private ArrayList<Article> articleList;
+    private RecyclerView recyclerView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -54,6 +56,8 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        db = DatabaseHelper.getInstance(getContext());
+
         articleList = new ArrayList<>();
 
 //        if (savedInstanceState != null)
@@ -68,22 +72,17 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view.findViewById(R.id.rvArticles);
 
-        setArticlesInfo();
+        // Get articles from database
+        articleList = (ArrayList<Article>) db.getArticles();
+
+        // Display articles in recycler view
         setArticleAdapter();
 
         return view;
-    }
-
-    private void setArticlesInfo() {
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
-        articleList.add(new Article());
     }
 
     private void setArticleAdapter() {

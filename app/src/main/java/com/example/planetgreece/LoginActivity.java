@@ -5,7 +5,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 
+import com.example.planetgreece.adapter.LoginAdapter;
 import com.example.planetgreece.db.DatabaseHelper;
+import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
 import com.example.planetgreece.fragment.Login.SignupTabFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

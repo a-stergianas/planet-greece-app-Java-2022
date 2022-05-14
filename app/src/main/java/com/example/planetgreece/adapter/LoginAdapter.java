@@ -1,4 +1,4 @@
-package com.example.planetgreece;
+package com.example.planetgreece.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

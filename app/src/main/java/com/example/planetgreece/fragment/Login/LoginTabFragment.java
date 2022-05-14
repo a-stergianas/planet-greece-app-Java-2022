@@ -54,7 +54,6 @@ public class LoginTabFragment extends Fragment {
 
         login.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                Toast.makeText(getContext(), "Login button clicked", Toast.LENGTH_SHORT).show();
                 String email = email_login.getText().toString();
                 String password = password_login.getText().toString();
 
@@ -76,7 +75,7 @@ public class LoginTabFragment extends Fragment {
                     intent.putExtra(USER_OBJECT, user);
 
                     startActivity(intent);
-//                getActivity().finish();
+                    getActivity().finish();
                 } else {
                     Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
                 }

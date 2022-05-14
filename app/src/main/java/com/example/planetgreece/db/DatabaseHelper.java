@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.planetgreece.common.Helper;
-import com.example.planetgreece.Article;
+import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.db.model.User;
 
 import java.text.SimpleDateFormat;
@@ -21,7 +21,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -43,7 +43,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // ARTICLES
     private static final String ARTICLES_TITLE = "title";
-    private static final String ARTICLES_CONTENT = "content";
     private static final String ARTICLES_IMAGE = "image";
     private static final String ARTICLES_SITE_NAME = "site_name";
     private static final String ARTICLES_LINK = "link";
@@ -75,19 +74,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String.format("CREATE TABLE %s" +
                 "(" +
                     "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "%s TEXT" +
-                    "%s TEXT" +
-                    "%s TEXT" +
-                    "%s TEXT" +
-                    "%s TEXT" +
+                    "%s TEXT," +
+                    "%s INTEGER," +
+                    "%s TEXT," +
+                    "%s TEXT," +
+                    "%s DATETIME" +
                 ")",
                     TABLE_ARTICLES,
                     KEY_ID,
                     ARTICLES_TITLE,
-                    ARTICLES_CONTENT,
                     ARTICLES_IMAGE,
                     ARTICLES_SITE_NAME,
-                    ARTICLES_LINK);
+                    ARTICLES_LINK,
+                    KEY_CREATED_AT);
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -199,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<User> getUsers() {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT * FROM %s", TABLE_USERS);
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s ORDER BY id DESC", TABLE_USERS);
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
@@ -274,6 +273,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * ARTICLES TABLE METHODS
      **********************************************************************************************/
 
+    public boolean articleExists(String link) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = %s",
+                TABLE_ARTICLES,
+                ARTICLES_LINK,
+                DatabaseUtils.sqlEscapeString(link)
+        );
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        int cursorCount = c.getCount();
+        c.close();
+
+        if (cursorCount > 0)
+            return true;
+
+        return false;
+    }
+
     @SuppressLint("Range")
     public Article getArticle(long id) {
         SQLiteDatabase db = getReadableDatabase();
@@ -290,8 +309,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Article article = new Article();
         article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-        article.setContent(c.getString(c.getColumnIndex(ARTICLES_CONTENT)));
-        article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
+        article.setImage(c.getInt(c.getColumnIndex(ARTICLES_IMAGE)));
         article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
         article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
         article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
@@ -304,7 +322,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public List<Article> getArticles() {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT * FROM %s", TABLE_ARTICLES);
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s ORDER BY created_at DESC", TABLE_ARTICLES);
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
@@ -315,8 +333,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Article article = new Article();
                 article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
                 article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-                article.setContent(c.getString(c.getColumnIndex(ARTICLES_CONTENT)));
-                article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
+                article.setImage(c.getInt(c.getColumnIndex(ARTICLES_IMAGE)));
                 article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
                 article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
                 article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
@@ -330,6 +347,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return articles;
     }
 
+    public void deleteArticle(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_ARTICLES, KEY_ID + " = ?", new String[] { String.valueOf(id) });
+    }
+
+    public long createArticle(Article article) {
+        if (articleExists(article.getLink())) {
+            System.out.println("Article link already exists");
+            return -1;
+        }
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(ARTICLES_TITLE, article.getTitle());
+        values.put(ARTICLES_IMAGE, article.getImage());
+        values.put(ARTICLES_SITE_NAME, article.getSiteName());
+        values.put(ARTICLES_LINK, article.getLink());
+        values.put(KEY_CREATED_AT, getDateTime());
+
+        long id = db.insert(TABLE_ARTICLES, null, values);
+
+        return id;
+    }
+
+    public void updateArticle(Article article) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(ARTICLES_TITLE, article.getTitle());
+        values.put(ARTICLES_IMAGE, article.getImage());
+        values.put(ARTICLES_SITE_NAME, article.getSiteName());
+        values.put(ARTICLES_LINK, article.getLink());
+
+        db.update(TABLE_ARTICLES, values, KEY_ID + " = ?", new String[] { String.valueOf(article.getId()) });
+    }
+
     /**********************************************************************************************
      * MISC FUNCTIONS
      **********************************************************************************************/
@@ -340,7 +395,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
     }
 
-    private String getDateTime() {
+    public static String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();

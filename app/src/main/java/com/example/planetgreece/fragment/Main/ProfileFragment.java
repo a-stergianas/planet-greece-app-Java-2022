@@ -1,5 +1,6 @@
 package com.example.planetgreece.fragment.Main;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.example.planetgreece.LoginActivity;
+import com.example.planetgreece.MainActivity;
 import com.example.planetgreece.R;
+import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 
 /**
@@ -17,9 +23,13 @@ import com.example.planetgreece.db.model.User;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
+    DatabaseHelper db;
+
     private static final String ARG_USER = "param1";
 
     private User mUser;
+
+    private TextView btnLogout; // btnLogout is actually a TextView :D
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -43,6 +53,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        db = DatabaseHelper.getInstance(getContext());
+
         if (getArguments() != null) {
             mUser = (User) getArguments().getSerializable(ARG_USER);
         }
@@ -52,6 +65,22 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        btnLogout = view.findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.closeDb();
+
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
+
+        return view;
     }
 }
