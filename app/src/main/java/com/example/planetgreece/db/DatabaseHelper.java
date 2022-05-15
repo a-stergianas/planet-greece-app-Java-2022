@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.model.Article;
@@ -14,6 +15,7 @@ import com.example.planetgreece.db.model.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +23,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -40,6 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String USERS_PASSWORD = "password";
     private static final String USERS_SALT = "salt";
     private static final String USERS_IS_ADMIN = "is_admin";
+    private static final String USERS_SAVED_ARTICLES = "saved_articles";
 
     // ARTICLES
     private static final String ARTICLES_TITLE = "title";
@@ -58,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "%s TEXT," +
                     "%s TEXT," +
                     "%s INTEGER DEFAULT 0," +
+                    "%s TEXT," +
                     "%s DATETIME" +
                 ")",
                     TABLE_USERS,
@@ -68,6 +72,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     USERS_PASSWORD,
                     USERS_SALT,
                     USERS_IS_ADMIN,
+                    USERS_SAVED_ARTICLES,
                     KEY_CREATED_AT);
 
     private static final String CREATE_TABLE_ARTICLES =
@@ -115,29 +120,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * USERS TABLE METHODS
      **********************************************************************************************/
 
-    @SuppressLint("Range")
-    public User getUser(long id) {
+    public boolean userExists(long id) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", TABLE_USERS, KEY_ID, id);
+
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = %s",
+                TABLE_USERS,
+                KEY_ID,
+                id
+        );
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
-        if (c == null)
-            return null;
+        int cursorCount = c.getCount();
+        c.close();
 
-        if (!c.moveToFirst())
-            return null;
+        if (cursorCount > 0)
+            return true;
 
-        User user = new User();
-
-        user.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-        user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
-        user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
-        user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
-        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
-        user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
-
-        return user;
+        return false;
     }
 
     public boolean userExists(String email) {
@@ -158,6 +158,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
 
         return false;
+    }
+
+    @SuppressLint("Range")
+    public User getUser(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d", TABLE_USERS, KEY_ID, id);
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
+
+        User user = new User();
+
+        user.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+        user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
+        user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
+        user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
+        user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
+        user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
+        user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+        return user;
     }
 
     @SuppressLint("Range")
@@ -188,6 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
         user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
+        user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
@@ -214,6 +241,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //                user.setPassword(c.getString(c.getColumnIndex(USERS_PASSWORD)));
                 user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
                 user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
+                user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
                 user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 users.add(user);
@@ -269,9 +297,172 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(user.getId()) });
     }
 
+    public boolean isArticleInSaved(int userId, int articleId) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return false;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return false;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getSavedArticles() == null)
+            return false;
+
+        String[] split = user.getSavedArticles().split(",");
+
+        for (String s : split) {
+            if (s.equals(String.valueOf(articleId))) {
+                System.out.println("Article found in saved articles");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addArticleToSaved(int userId, int articleId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+        ArrayList<String> savedArticles = new ArrayList<>();
+
+        if (user.getSavedArticles() != null) {
+            String[] split = user.getSavedArticles().split(",");
+
+            for (String s : split) {
+                if (s.equals(String.valueOf(articleId))) {
+                    System.out.println("Article already saved");
+                    return;
+                }
+
+                savedArticles.add(s);
+            }
+        }
+
+        savedArticles.add(String.valueOf(articleId));
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_SAVED_ARTICLES, TextUtils.join(",", savedArticles));
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
+    public void removeArticleFromSaved(int userId, int articleId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getSavedArticles() == null) {
+            System.out.println("User does not have any saved articles");
+            return;
+        }
+
+        ArrayList<String> savedArticles = new ArrayList<>();
+        String[] split = user.getSavedArticles().split(",");
+
+        for (String s : split) {
+            if (s.equals(String.valueOf(articleId))) {
+                continue;
+            }
+
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            savedArticles.add(String.valueOf(s));
+        }
+
+        ContentValues values = new ContentValues();
+
+        if (savedArticles.size() == 0) {
+            values.putNull(USERS_SAVED_ARTICLES);
+        } else {
+            values.put(USERS_SAVED_ARTICLES, TextUtils.join(",", savedArticles));
+        }
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
+    @SuppressLint("Range")
+    public List<Article> getSavedArticles(long id) {
+        if (!userExists(id)) {
+            System.out.println("User does not exist");
+            return null;
+        }
+
+        User user = getUser(id);
+
+        if (user.getSavedArticles() == null) {
+            System.out.println("User does not have any saved articles");
+            return null;
+        }
+
+        ArrayList<Article> savedArticles = new ArrayList<>();
+        String[] split = user.getSavedArticles().split(",");
+
+        System.out.println(user.getSavedArticles());
+        System.out.println(split);
+
+        for (String s : split) {
+            Article article = getArticle(Integer.parseInt(s));
+            savedArticles.add(article);
+        }
+
+        Collections.reverse(savedArticles);
+
+        return savedArticles;
+    }
+
     /**********************************************************************************************
      * ARTICLES TABLE METHODS
      **********************************************************************************************/
+
+    public boolean articleExists(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = String.format(Locale.getDefault(), "SELECT id FROM %s WHERE %s = %s",
+                TABLE_ARTICLES,
+                KEY_ID,
+                id
+        );
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        int cursorCount = c.getCount();
+        c.close();
+
+        if (cursorCount > 0)
+            return true;
+
+        return false;
+    }
 
     public boolean articleExists(String link) {
         SQLiteDatabase db = getReadableDatabase();

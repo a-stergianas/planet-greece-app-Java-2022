@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setArticleAdapter() {
-        ArticleAdapter adapter = new ArticleAdapter(articleList);
+        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), articleList);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

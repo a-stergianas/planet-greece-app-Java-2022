@@ -3,14 +3,20 @@ package com.example.planetgreece.fragment.Main;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.planetgreece.R;
+import com.example.planetgreece.adapter.ArticleAdapter;
 import com.example.planetgreece.db.DatabaseHelper;
+import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.db.model.User;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +29,9 @@ public class SavedFragment extends Fragment {
     private static final String ARG_USER = "param1";
 
     private User mUser;
+
+    private ArrayList<Article> savedArticlesList;
+    private RecyclerView recyclerView;
 
     public SavedFragment() {
         // Required empty public constructor
@@ -49,6 +58,8 @@ public class SavedFragment extends Fragment {
 
         db = DatabaseHelper.getInstance(getContext());
 
+        savedArticlesList = new ArrayList<>();
+
         if (getArguments() != null) {
             mUser = (User) getArguments().getSerializable(ARG_USER);
         }
@@ -60,6 +71,21 @@ public class SavedFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_saved, container, false);
 
+        recyclerView = view.findViewById(R.id.rvArticles);
+
+        // Get articles from database
+        savedArticlesList = (ArrayList<Article>) db.getSavedArticles(mUser.getId());
+
+        // Display articles in recycler view
+        setArticleAdapter();
+
         return view;
+    }
+
+    private void setArticleAdapter() {
+        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), savedArticlesList);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 }

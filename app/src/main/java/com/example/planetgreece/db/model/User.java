@@ -10,6 +10,7 @@ public class User implements Serializable {
     private String password;
     private String salt;
     private boolean isAdmin;
+    private String savedArticles;
     private String createdAt;
 
     public User() {
@@ -44,6 +45,10 @@ public class User implements Serializable {
         return isAdmin;
     }
 
+    public String getSavedArticles() {
+        return savedArticles;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
@@ -74,6 +79,10 @@ public class User implements Serializable {
 
     public void setIsAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public void setSavedArticles(String savedArticles) {
+        this.savedArticles = savedArticles;
     }
 
     public void setCreatedAt(String createdAt) {
