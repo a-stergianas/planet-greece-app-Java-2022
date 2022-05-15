@@ -1,6 +1,7 @@
 package com.example.planetgreece.adapter;
 
 import android.annotation.SuppressLint;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,22 +64,27 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 createdAt = articlesList.get(position).getCreatedAt();
         int image = articlesList.get(position).getImage();
 
+        int articleId = articlesList.get(position).getId();
+
         viewHolder.title.setText(title);
         viewHolder.imageView.setImageResource(image);
         viewHolder.site.setText(siteName);
         //να μπει το λινκ
         viewHolder.date.setText(createdAt);
 
+        if (db.isArticleInSaved(userId, articleId))
+            viewHolder.btnSave.setColorFilter(R.color.secondary_green, PorterDuff.Mode.SRC_ATOP);
+
         viewHolder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int articleId = articlesList.get(position).getId();
-
                 if (!db.isArticleInSaved(userId, articleId)) {
                     db.addArticleToSaved(userId, articleId);
+                    viewHolder.btnSave.setColorFilter(R.color.secondary_green, PorterDuff.Mode.SRC_ATOP);
                     Toast.makeText(v.getContext(), "Saved article", Toast.LENGTH_SHORT).show();
                 } else {
                     db.removeArticleFromSaved(userId, articleId);
+                    viewHolder.btnSave.setColorFilter(null);
                     Toast.makeText(v.getContext(), "Removed article", Toast.LENGTH_SHORT).show();
                 }
             }
