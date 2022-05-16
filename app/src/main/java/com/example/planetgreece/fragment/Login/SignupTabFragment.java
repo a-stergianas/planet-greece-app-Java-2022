@@ -20,11 +20,10 @@ import com.example.planetgreece.db.model.User;
 import java.util.Objects;
 
 public class SignupTabFragment extends Fragment {
+    private DatabaseHelper db;
 
-    DatabaseHelper db;
-
-    EditText firstname, lastname, email_signup, password_signup;
-    Button signup;
+    private EditText firstname, lastname, email_signup, password_signup;
+    private Button signup;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,47 +42,44 @@ public class SignupTabFragment extends Fragment {
         password_signup = root.findViewById(R.id.etPasswordSignup);
         signup = root.findViewById(R.id.btnSignup);
 
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String firstName = Helper.capitalizeFirstLetter(firstname.getText().toString());
-                String lastName = Helper.capitalizeFirstLetter(lastname.getText().toString());
-                String email = email_signup.getText().toString();
-                String password = password_signup.getText().toString();
+        signup.setOnClickListener(v -> {
+            String firstName = Helper.capitalizeFirstLetter(firstname.getText().toString());
+            String lastName = Helper.capitalizeFirstLetter(lastname.getText().toString());
+            String email = email_signup.getText().toString();
+            String password = password_signup.getText().toString();
 
 //                Toast.makeText(getContext(), "Signup button clicked", Toast.LENGTH_LONG).show();
-                if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
-                    return;
-                }
+            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                if (!Helper.isEmailValid(email)) {
-                    Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_LONG).show();
-                    return;
-                }
+            if (!Helper.isEmailValid(email)) {
+                Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                User user = new User();
-                user.setFirstName(firstName);
-                user.setLastName(lastName);
-                user.setEmail(email);
-                user.setSalt(Helper.generateRandomString(32));
-                user.setPassword(Helper.encryptPassword(password, user.getSalt()));
-                user.setIsAdmin(false);
+            User user = new User();
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setEmail(email);
+            user.setSalt(Helper.generateRandomString(32));
+            user.setPassword(Helper.encryptPassword(password, user.getSalt()));
+            user.setIsAdmin(false);
 
-                long id = db.createUser(user);
-                if (id != -1) {
-                    firstname.setText("");
-                    lastname.setText("");
-                    email_signup.setText("");
-                    password_signup.setText("");
+            long id = db.createUser(user);
+            if (id != -1) {
+                firstname.setText("");
+                lastname.setText("");
+                email_signup.setText("");
+                password_signup.setText("");
 
-                    // Switch back to login tab in fragment
-                    ((LoginActivity) requireActivity()).switchToLoginTab();
+                // Switch back to login tab in fragment
+                ((LoginActivity) requireActivity()).switchToLoginTab();
 
-                    Toast.makeText(getContext(), "User created, you can now login.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(getContext(), "User created, you can now login.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
             }
         });
 

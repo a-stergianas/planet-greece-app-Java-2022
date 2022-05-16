@@ -179,6 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setFirstName(c.getString(c.getColumnIndex(USERS_FIRSTNAME)));
         user.setLastName(c.getString(c.getColumnIndex(USERS_LASTNAME)));
         user.setEmail(c.getString(c.getColumnIndex(USERS_EMAIL)));
+        user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
         user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
@@ -220,6 +221,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
 
         return user;
+    }
+
+    @SuppressLint("Range")
+    public String getUserPassword(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT password FROM %s WHERE %s = %d", TABLE_USERS, KEY_ID, id);
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
+
+        String password = c.getString(c.getColumnIndex(USERS_PASSWORD));
+
+        return password;
     }
 
     @SuppressLint("Range")
@@ -295,6 +314,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_IS_ADMIN, user.getIsAdmin());
 
         db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(user.getId()) });
+    }
+
+    public boolean changePassword(long id, String newPassword) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(id)) {
+            System.out.println("User does not exist");
+            return false;
+        }
+
+        String newSalt = Helper.generateRandomString(32);
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_PASSWORD, Helper.encryptPassword(newPassword, newSalt));
+        values.put(USERS_SALT, newSalt);
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(id) });
+        return true;
     }
 
     public boolean isArticleInSaved(int userId, int articleId) {

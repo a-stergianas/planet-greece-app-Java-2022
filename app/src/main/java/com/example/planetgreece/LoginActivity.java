@@ -14,8 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends AppCompatActivity {
-
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     private TabLayout tabLayout;
     private ViewPager viewPager;

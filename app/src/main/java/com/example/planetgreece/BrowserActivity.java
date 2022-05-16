@@ -33,12 +33,7 @@ public class BrowserActivity extends AppCompatActivity {
         link = getIntent().getStringExtra("LINK");
 
         btnBack = findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        btnBack.setOnClickListener(v -> finish());
 
         webView = (WebView) findViewById(R.id.wvBrowser);
         webView.loadUrl(link);

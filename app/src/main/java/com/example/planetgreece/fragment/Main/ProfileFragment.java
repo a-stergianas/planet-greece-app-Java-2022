@@ -9,12 +9,16 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.planetgreece.ChangePasswordActivity;
+import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.LoginActivity;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
+import com.example.planetgreece.fragment.Login.LoginTabFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,7 +26,7 @@ import com.example.planetgreece.db.model.User;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
 
@@ -33,6 +37,8 @@ public class ProfileFragment extends Fragment {
     private TextView tvFirstName;
     private TextView tvLastName;
     private TextView tvEmail;
+    private Button btnEditProfile;
+    private Button btnChangePassword;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -76,18 +82,32 @@ public class ProfileFragment extends Fragment {
         tvLastName = view.findViewById(R.id.tvLastname);
         tvEmail = view.findViewById(R.id.tvEmail);
 
+        mUser = db.getUser(mUser.getId());
+
         btnLogout = view.findViewById(R.id.btnBack);
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.closeDb();
+        btnLogout.setOnClickListener(v -> {
+            db.closeDb();
 
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                startActivity(intent);
-                getActivity().finish();
-            }
+            startActivity(intent);
+            getActivity().finish();
+        });
+
+        btnEditProfile = view.findViewById(R.id.btnEditProfile);
+        btnChangePassword = view.findViewById(R.id.btnChangePassword);
+
+        btnEditProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), EditProfileActivity.class);
+            intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
+            startActivity(intent);
+        });
+
+        btnChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ChangePasswordActivity.class);
+            intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
+            startActivity(intent);
         });
 
         tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());

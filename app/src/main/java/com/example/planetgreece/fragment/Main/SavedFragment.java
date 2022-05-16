@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  */
 public class SavedFragment extends Fragment implements RecyclerViewInterface {
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
 

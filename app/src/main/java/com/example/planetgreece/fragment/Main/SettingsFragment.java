@@ -18,7 +18,7 @@ import com.example.planetgreece.db.model.User;
  * create an instance of this fragment.
  */
 public class SettingsFragment extends Fragment {
-    DatabaseHelper db;
+    private DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
 
