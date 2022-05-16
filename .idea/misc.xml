@@ -19,7 +19,6 @@
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.186" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/drawable/button_bg.xml" value="0.2515" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.3455" />
-        <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/drawable/item_selector.xml" value="0.307" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/activity_browser.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/activity_login.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/activity_main.xml" value="0.35104166666666664" />
@@ -29,15 +28,12 @@
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/login_tab_fragment.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/PlanetGreece/planet-greece-app-Java-2022/app/src/main/res/layout/signup_tab_fragment.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/drawable/button_bg.xml" value="0.2515" />
-        <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.31" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/drawable/item_selector.xml" value="0.252" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/drawable/view_bg.xml" value="0.2515" />
-        <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/activity_change_password.xml" value="0.32518115942028986" />
-        <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/activity_edit_profile.xml" value="0.33" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/activity_login.xml" value="0.35104166666666664" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/activity_main.xml" value="0.18" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_home.xml" value="0.33697916666666666" />
-        <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_profile.xml" value="0.25" />
+        <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_profile.xml" value="0.34375" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_saved.xml" value="0.34375" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_settings.xml" value="0.34375" />
         <entry key="..\:/Users/achil/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/item_article.xml" value="0.35104166666666664" />
@@ -50,7 +46,9 @@
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/fragment_saved.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/login_tab_fragment.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/stam/AndroidStudioProjects/planet-greece-app-Java-2022/app/src/main/res/layout/signup_tab_fragment.xml" value="0.3333333333333333" />
+        <entry key="app/src/main/res/layout/activity_browser.xml" value="0.18854166666666666" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.29981884057971014" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

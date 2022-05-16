@@ -9,11 +9,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.planetgreece.LoginActivity;
-import com.example.planetgreece.MainActivity;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
@@ -78,7 +76,7 @@ public class ProfileFragment extends Fragment {
         tvLastName = view.findViewById(R.id.tvLastname);
         tvEmail = view.findViewById(R.id.tvEmail);
 
-        btnLogout = view.findViewById(R.id.btnLogout);
+        btnLogout = view.findViewById(R.id.btnBack);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
