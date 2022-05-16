@@ -55,6 +55,8 @@ public class Helper {
     }
 
     public static String capitalizeFirstLetter(String text) {
+        if (text.isEmpty())
+            return null;
         return text.substring(0, 1).toUpperCase() + text.substring(1, text.length());
     }
 }
