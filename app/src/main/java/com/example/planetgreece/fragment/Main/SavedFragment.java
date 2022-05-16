@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * Use the {@link SavedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SavedFragment extends Fragment  implements RecyclerViewInterface {
+public class SavedFragment extends Fragment implements RecyclerViewInterface {
     DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
