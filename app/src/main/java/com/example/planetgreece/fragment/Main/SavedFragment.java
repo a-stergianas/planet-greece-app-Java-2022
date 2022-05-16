@@ -1,5 +1,6 @@
 package com.example.planetgreece.fragment.Main;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.planetgreece.BrowserActivity;
 import com.example.planetgreece.R;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.adapter.ArticleAdapter;
@@ -71,7 +73,6 @@ public class SavedFragment extends Fragment implements RecyclerViewInterface {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_saved, container, false);
-
         recyclerView = view.findViewById(R.id.rvArticles);
 
         // Get articles from database
@@ -92,6 +93,8 @@ public class SavedFragment extends Fragment implements RecyclerViewInterface {
 
     @Override
     public void onItemClick(int position) {
-
+        Intent intent = new Intent (getActivity(), BrowserActivity.class);
+        intent.putExtra("LINK", savedArticlesList.get(position).getLink());
+        startActivity(intent);
     }
 }
