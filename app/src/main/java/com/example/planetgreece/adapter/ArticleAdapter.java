@@ -1,7 +1,19 @@
 package com.example.planetgreece.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.database.DatabaseErrorHandler;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +23,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.planetgreece.R;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
@@ -89,18 +108,18 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         viewHolder.date.setText(createdAt);
 
         if (db.isArticleInSaved(userId, articleId))
-            viewHolder.btnSave.setColorFilter(R.color.secondary_green, PorterDuff.Mode.SRC_ATOP);
+            viewHolder.btnSave.setImageTintList(ContextCompat.getColorStateList(viewHolder.btnSave.getContext(), R.color.secondary_green));
 
         viewHolder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!db.isArticleInSaved(userId, articleId)) {
                     db.addArticleToSaved(userId, articleId);
-                    viewHolder.btnSave.setColorFilter(R.color.secondary_green, PorterDuff.Mode.SRC_ATOP);
+                    viewHolder.btnSave.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.secondary_green));
                     Toast.makeText(v.getContext(), "Saved article", Toast.LENGTH_SHORT).show();
                 } else {
                     db.removeArticleFromSaved(userId, articleId);
-                    viewHolder.btnSave.setColorFilter(null);
+                    viewHolder.btnSave.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.white));
                     Toast.makeText(v.getContext(), "Removed article", Toast.LENGTH_SHORT).show();
                 }
             }
