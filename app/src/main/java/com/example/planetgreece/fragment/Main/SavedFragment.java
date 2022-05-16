@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.planetgreece.R;
+import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.adapter.ArticleAdapter;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  * Use the {@link SavedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SavedFragment extends Fragment {
+public class SavedFragment extends Fragment  implements RecyclerViewInterface {
     DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
@@ -83,9 +84,14 @@ public class SavedFragment extends Fragment {
     }
 
     private void setArticleAdapter() {
-        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), savedArticlesList);
+        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), savedArticlesList, this);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    public void onItemClick(int position) {
+
     }
 }

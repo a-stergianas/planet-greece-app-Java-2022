@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.planetgreece.R;
+import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
 
@@ -23,9 +24,12 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     private int userId;
     private ArrayList<Article> articlesList;
 
-    public ArticleAdapter(int userId, ArrayList<Article> articlesList) {
+    private final RecyclerViewInterface recyclerViewInterface;
+
+    public ArticleAdapter(int userId, ArrayList<Article> articlesList, RecyclerViewInterface recyclerViewInterface) {
         this.userId = userId;
         this.articlesList = articlesList;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -34,7 +38,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         private TextView title, site, date;
         private ImageButton btnLike, btnSave;
 
-        public ViewHolder(@NonNull View view) {
+        public ViewHolder(@NonNull View view, RecyclerViewInterface recyclerViewInterface) {
             super(view);
 
             imageView = view.findViewById(R.id.ivArticleImage);
@@ -43,6 +47,18 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             date = view.findViewById(R.id.tvDate);
             btnLike = view.findViewById(R.id.btnLike);
             btnSave = view.findViewById(R.id.btnSave);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (recyclerViewInterface != null) {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -52,7 +68,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         db = DatabaseHelper.getInstance(viewGroup.getContext());
 
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_article, viewGroup, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, recyclerViewInterface);
     }
 
     @Override

@@ -17,6 +17,7 @@ public class BrowserActivity extends AppCompatActivity {
     private WebSettings webSettings;
     private WebViewClient webViewClient;
     private ProgressBar progressBar;
+    private String link;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -28,8 +29,10 @@ public class BrowserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser);
 
+        link = getIntent().getStringExtra("LINK");
+
         webView = (WebView) findViewById(R.id.wvBrowser);
-        webView.loadUrl("https://www.arcturos.gr/news/thomassurvivor/");
+        webView.loadUrl(link);
 
         webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);

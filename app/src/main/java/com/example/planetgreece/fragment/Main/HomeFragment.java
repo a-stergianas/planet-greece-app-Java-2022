@@ -1,5 +1,6 @@
 package com.example.planetgreece.fragment.Main;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.planetgreece.BrowserActivity;
+import com.example.planetgreece.MainActivity;
+import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.R;
@@ -23,7 +27,7 @@ import java.util.ArrayList;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements RecyclerViewInterface {
     DatabaseHelper db;
 
     private static final String ARG_USER = "param1";
@@ -86,9 +90,16 @@ public class HomeFragment extends Fragment {
     }
 
     private void setArticleAdapter() {
-        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), articleList);
+        ArticleAdapter adapter = new ArticleAdapter(mUser.getId(), articleList, this);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Intent intent = new Intent (getActivity(), BrowserActivity.class);
+        intent.putExtra("LINK", articleList.get(position).getLink());
+        startActivity(intent);
     }
 }
