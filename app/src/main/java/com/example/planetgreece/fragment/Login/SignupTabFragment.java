@@ -11,10 +11,13 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.planetgreece.LoginActivity;
 import com.example.planetgreece.R;
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
+
+import java.util.Objects;
 
 public class SignupTabFragment extends Fragment {
 
@@ -43,8 +46,8 @@ public class SignupTabFragment extends Fragment {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String firstName = firstname.getText().toString();
-                String lastName = lastname.getText().toString();
+                String firstName = Helper.capitalizeFirstLetter(firstname.getText().toString());
+                String lastName = Helper.capitalizeFirstLetter(lastname.getText().toString());
                 String email = email_signup.getText().toString();
                 String password = password_signup.getText().toString();
 
@@ -69,7 +72,14 @@ public class SignupTabFragment extends Fragment {
 
                 long id = db.createUser(user);
                 if (id != -1) {
-                    System.out.println("Created user with ID: " + id);
+                    firstname.setText("");
+                    lastname.setText("");
+                    email_signup.setText("");
+                    password_signup.setText("");
+
+                    // Switch back to login tab in fragment
+                    ((LoginActivity) requireActivity()).switchToLoginTab();
+
                     Toast.makeText(getContext(), "User created, you can now login.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();

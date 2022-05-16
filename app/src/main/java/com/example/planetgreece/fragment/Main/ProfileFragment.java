@@ -1,5 +1,6 @@
 package com.example.planetgreece.fragment.Main;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -30,6 +31,10 @@ public class ProfileFragment extends Fragment {
     private User mUser;
 
     private TextView btnLogout; // btnLogout is actually a TextView :D
+    private TextView tvFullName;
+    private TextView tvFirstName;
+    private TextView tvLastName;
+    private TextView tvEmail;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -61,11 +66,17 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        tvFullName = view.findViewById(R.id.tvFullName);
+        tvFirstName = view.findViewById(R.id.tvFirstname);
+        tvLastName = view.findViewById(R.id.tvLastname);
+        tvEmail = view.findViewById(R.id.tvEmail);
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +91,11 @@ public class ProfileFragment extends Fragment {
                 getActivity().finish();
             }
         });
+
+        tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());
+        tvFirstName.setText(mUser.getFirstName());
+        tvLastName.setText(mUser.getLastName());
+        tvEmail.setText(mUser.getEmail());
 
         return view;
     }
