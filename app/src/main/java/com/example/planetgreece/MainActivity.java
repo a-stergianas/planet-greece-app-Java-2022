@@ -14,6 +14,7 @@ import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
 import com.example.planetgreece.fragment.Main.HomeFragment;
+import com.example.planetgreece.fragment.Main.MapFragment;
 import com.example.planetgreece.fragment.Main.ProfileFragment;
 import com.example.planetgreece.fragment.Main.SavedFragment;
 import com.example.planetgreece.fragment.Main.SettingsFragment;
@@ -76,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
 //                        break;
                     case R.id.navSaved:
                         fragment = SavedFragment.newInstance(user);
+                        break;
+                    case R.id.navMap:
+                        //fragment = MapFragment.newInstance(user);
                         break;
                     case R.id.navProfile:
                         fragment = ProfileFragment.newInstance(user);
