@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.planetgreece.common.Helper;
+import com.example.planetgreece.common.Results;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
@@ -33,7 +34,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         db = DatabaseHelper.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
+        User user = db.getUser(((User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT)).getId());
 
         etOldPassword = findViewById(R.id.etOldPassword);
         etNewPassword = findViewById(R.id.etNewPassword);
@@ -64,6 +65,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
             // Update the user password
             if (db.changePassword(user.getId(), newPassword)) {
                 Toast.makeText(ChangePasswordActivity.this, "Password changed successfully", Toast.LENGTH_SHORT).show();
+
+                setResult(Results.ChangedPassword.ordinal());
+
                 finish();
             } else {
                 Toast.makeText(ChangePasswordActivity.this, "Password change failed", Toast.LENGTH_SHORT).show();

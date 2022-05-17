@@ -1,9 +1,15 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -16,6 +22,7 @@ import com.example.planetgreece.ChangePasswordActivity;
 import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.LoginActivity;
 import com.example.planetgreece.R;
+import com.example.planetgreece.common.Results;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
@@ -101,13 +108,16 @@ public class ProfileFragment extends Fragment {
         btnEditProfile.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), EditProfileActivity.class);
             intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
-            startActivity(intent);
+//            startActivity(intent);
+//            startActivityForResult(intent, 1);
+            resultLauncher.launch(intent);
         });
 
         btnChangePassword.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ChangePasswordActivity.class);
             intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
-            startActivity(intent);
+//            startActivity(intent);
+            resultLauncher.launch(intent);
         });
 
         tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());
@@ -117,4 +127,28 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
+
+    ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Results.EditedProfile.ordinal()) {
+                        System.out.println("Edited profile");
+//                        Intent data = result.getData();
+                        mUser = db.getUser(mUser.getId());
+
+                        tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());
+                        tvFirstName.setText(mUser.getFirstName());
+                        tvLastName.setText(mUser.getLastName());
+                        tvEmail.setText(mUser.getEmail());
+                    }
+
+                    if (result.getResultCode() == Results.ChangedPassword.ordinal()) {
+                        System.out.println("Changed password");
+                    }
+                }
+            }
+    );
 }

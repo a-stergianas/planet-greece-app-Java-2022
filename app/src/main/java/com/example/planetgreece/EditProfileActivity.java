@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.planetgreece.common.Helper;
+import com.example.planetgreece.common.Results;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
@@ -34,7 +35,7 @@ public class EditProfileActivity extends AppCompatActivity {
         db = DatabaseHelper.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
-        User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
+        User user = db.getUser(((User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT)).getId());
 
         etFirstName = findViewById(R.id.tvFirstname);
         etLastName = findViewById(R.id.tvLastname);
@@ -84,6 +85,8 @@ public class EditProfileActivity extends AppCompatActivity {
             db.updateUser(user);
 
             Toast.makeText(EditProfileActivity.this, "Changes saved.", Toast.LENGTH_SHORT).show();
+
+            setResult(Results.EditedProfile.ordinal());
 
             finish();
         });
