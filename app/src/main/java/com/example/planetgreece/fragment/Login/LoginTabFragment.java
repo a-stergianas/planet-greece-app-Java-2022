@@ -57,12 +57,12 @@ public class LoginTabFragment extends Fragment {
             String password = password_login.getText().toString();
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!Helper.isEmailValid(email)) {
-                Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please enter a valid email.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -76,7 +76,7 @@ public class LoginTabFragment extends Fragment {
                 startActivity(intent);
                 getActivity().finish();
             } else {
-                Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Invalid.", Toast.LENGTH_SHORT).show();
             }
 
         });

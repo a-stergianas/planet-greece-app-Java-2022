@@ -1,8 +1,5 @@
 package com.example.planetgreece.db.model;
 
-import com.example.planetgreece.R;
-import com.example.planetgreece.db.DatabaseHelper;
-
 import java.io.Serializable;
 
 public class Article implements Serializable {

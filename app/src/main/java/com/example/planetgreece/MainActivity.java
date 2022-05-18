@@ -79,9 +79,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = SavedFragment.newInstance(user);
                         break;
                     case R.id.navMap:
-//                        fragment = MapFragment.newInstance(user);
-                        // TODO
-                        fragment = new MapFragment();
+                        fragment = MapFragment.newInstance(user);
                         break;
                     case R.id.navProfile:
                         fragment = ProfileFragment.newInstance(user);

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.planetgreece.BrowserActivity;
-import com.example.planetgreece.MainActivity;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
@@ -68,7 +67,6 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 //            return;
 
         if (getArguments() != null) {
-//            param2 = getArguments().getString(ARG_PARAM2);
             mUser = (User) getArguments().getSerializable(ARG_USER);
         }
     }

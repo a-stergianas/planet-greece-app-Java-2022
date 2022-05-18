@@ -1,6 +1,5 @@
 package com.example.planetgreece.fragment.Login;
 
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +15,6 @@ import com.example.planetgreece.R;
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
-
-import java.util.Objects;
 
 public class SignupTabFragment extends Fragment {
     private DatabaseHelper db;
@@ -50,12 +47,12 @@ public class SignupTabFragment extends Fragment {
 
 //                Toast.makeText(getContext(), "Signup button clicked", Toast.LENGTH_LONG).show();
             if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_LONG).show();
                 return;
             }
 
             if (!Helper.isEmailValid(email)) {
-                Toast.makeText(getContext(), "Please enter a valid email", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Please enter a valid email.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -79,7 +76,7 @@ public class SignupTabFragment extends Fragment {
 
                 Toast.makeText(getContext(), "User created, you can now login.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(getContext(), "Invalid", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Invalid.", Toast.LENGTH_SHORT).show();
             }
         });
 

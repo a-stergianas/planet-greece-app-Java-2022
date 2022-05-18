@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -52,25 +51,25 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
             // Check if the old password is correct
             if(!userPassword.equals(Helper.encryptPassword(oldPassword, user.getSalt()))) {
-                Toast.makeText(ChangePasswordActivity.this, "Invalid current password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChangePasswordActivity.this, "Invalid current password.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // Check if the new password and the confirm password are the same
             if(!newPassword.equals(confirmPassword)) {
-                Toast.makeText(ChangePasswordActivity.this, "New password and confirm password do not match", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChangePasswordActivity.this, "New password and confirm password do not match.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // Update the user password
             if (db.changePassword(user.getId(), newPassword)) {
-                Toast.makeText(ChangePasswordActivity.this, "Password changed successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChangePasswordActivity.this, "Password changed successfully.", Toast.LENGTH_SHORT).show();
 
                 setResult(Results.ChangedPassword.ordinal());
 
                 finish();
             } else {
-                Toast.makeText(ChangePasswordActivity.this, "Password change failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChangePasswordActivity.this, "Password change failed.", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -1,7 +1,6 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,7 +8,6 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -109,14 +107,12 @@ public class ProfileFragment extends Fragment {
             Intent intent = new Intent(getContext(), EditProfileActivity.class);
             intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
 //            startActivity(intent);
-//            startActivityForResult(intent, 1);
             resultLauncher.launch(intent);
         });
 
         btnChangePassword.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ChangePasswordActivity.class);
             intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
-//            startActivity(intent);
             resultLauncher.launch(intent);
         });
 
@@ -135,7 +131,7 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Results.EditedProfile.ordinal()) {
-                        System.out.println("Edited profile");
+                        System.out.println("Edited profile.");
 //                        Intent data = result.getData();
                         mUser = db.getUser(mUser.getId());
 
@@ -146,7 +142,7 @@ public class ProfileFragment extends Fragment {
                     }
 
                     if (result.getResultCode() == Results.ChangedPassword.ordinal()) {
-                        System.out.println("Changed password");
+                        System.out.println("Changed password.");
                     }
                 }
             }

@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -74,7 +73,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             // Check if the old password is correct
             if(!userPassword.equals(Helper.encryptPassword(password, user.getSalt()))) {
-                Toast.makeText(EditProfileActivity.this, "Invalid current password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditProfileActivity.this, "Invalid current password.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
