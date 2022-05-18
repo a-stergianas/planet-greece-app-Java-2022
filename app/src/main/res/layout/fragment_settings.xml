@@ -33,11 +33,48 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
+        android:id="@+id/view5"
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:background="@color/secondary_green"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select which websites you want to receive news about:"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view5" />
+
+    <Switch
+        android:id="@+id/switchArktouros"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Αρκτούρος"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchGreenpeace"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Greenpeace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchArktouros"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
