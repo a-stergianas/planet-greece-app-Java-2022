@@ -297,7 +297,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_SALT, user.getSalt());
         values.put(USERS_IS_ADMIN, user.getIsAdmin() ? 1 : 0);
 //        values.put(KEY_CREATED_AT, "datetime('now')");
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(KEY_CREATED_AT, getDate());
 
         long id = db.insert(TABLE_USERS, null, values);
 
@@ -593,7 +593,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLES_IMAGE, article.getImage());
         values.put(ARTICLES_SITE_NAME, article.getSiteName());
         values.put(ARTICLES_LINK, article.getLink());
-        values.put(KEY_CREATED_AT, getDateTime());
+        values.put(KEY_CREATED_AT, getDate());
 
         long id = db.insert(TABLE_ARTICLES, null, values);
 
@@ -623,9 +623,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
     }
 
-    public static String getDateTime() {
+    public static String getDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                "dd-MM-yyyy", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }
