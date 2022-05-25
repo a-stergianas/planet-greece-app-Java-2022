@@ -5,13 +5,23 @@ import java.io.Serializable;
 public class Article implements Serializable {
     private int id;
     private String title;
-    private int image;
+    private String image;
     private String siteName;
     private String link;
     private String createdAt;
+    private int likes;
 
     public Article() {
 
+    }
+
+    public Article(String title, String image, String siteName, String link, String createdAt) {
+        this.title = title;
+        this.image = image;
+        this.siteName = siteName;
+        this.link = link;
+        this.createdAt = createdAt;
+        likes = 0;
     }
 
     public int getId() {
@@ -22,7 +32,7 @@ public class Article implements Serializable {
         return title;
     }
 
-    public int getImage() {
+    public String getImage() {
         return image;
     }
 
@@ -46,7 +56,7 @@ public class Article implements Serializable {
         this.title = title;
     }
 
-    public void setImage(int image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

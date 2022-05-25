@@ -1,6 +1,8 @@
 package com.example.planetgreece.adapter;
 
 import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import java.io.IOException;
+import java.io.InputStream;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,6 +25,7 @@ import com.example.planetgreece.R;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -76,14 +86,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, @SuppressLint("RecyclerView") final int position) {
         String title = articlesList.get(position).getTitle(),
                 siteName = articlesList.get(position).getSiteName(),
-                link = articlesList.get(position).getLink(),
+                //link = articlesList.get(position).getLink(),
                 createdAt = articlesList.get(position).getCreatedAt();
-        int image = articlesList.get(position).getImage();
+        String image = articlesList.get(position).getImage();
 
         int articleId = articlesList.get(position).getId();
 
         viewHolder.title.setText(title);
-        viewHolder.imageView.setImageResource(image);
+        //viewHolder.imageView.setImageResource(image);
+        Picasso.get().load(image).into(viewHolder.imageView);
         viewHolder.site.setText(siteName);
         //να μπει το λινκ
         viewHolder.date.setText(createdAt);
@@ -115,4 +126,5 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             return 0;
         }
     }
+
 }

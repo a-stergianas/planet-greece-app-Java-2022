@@ -67,13 +67,79 @@
         tools:checked="true" />
 
     <Switch
+        android:id="@+id/switchWWF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="WWF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchArktouros"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
         android:id="@+id/switchGreenpeace"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Greenpeace"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchArktouros"
+        app:layout_constraintTop_toBottomOf="@+id/switchWWF"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchOrnithologiki"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Ορνιθολογική"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchGreenpeace"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchMEDASSET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="MEDASSET"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchOrnithologiki"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchEEPF"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Ε.Ε.Π.Φ."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchMEDASSET"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchKallisto"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Καλλιστώ"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchEEPF"
+        app:layout_constraintWidth_percent=".8"
+        tools:checked="true" />
+
+    <Switch
+        android:id="@+id/switchArchelon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="ΑΡΧΕΛΩΝ"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchKallisto"
         app:layout_constraintWidth_percent=".8"
         tools:checked="true" />
 

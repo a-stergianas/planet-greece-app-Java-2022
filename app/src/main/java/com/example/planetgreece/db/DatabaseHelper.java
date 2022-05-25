@@ -537,7 +537,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Article article = new Article();
         article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-        article.setImage(c.getInt(c.getColumnIndex(ARTICLES_IMAGE)));
+        article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
         article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
         article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
         article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
@@ -561,7 +561,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Article article = new Article();
                 article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
                 article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-                article.setImage(c.getInt(c.getColumnIndex(ARTICLES_IMAGE)));
+                article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
                 article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
                 article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
                 article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
