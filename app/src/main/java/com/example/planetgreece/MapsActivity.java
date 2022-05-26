@@ -99,6 +99,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void gotoLocation(double latitude, double longitude) {
         LatLng latLng = new LatLng(latitude,longitude);
 
+
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng,15);
         mGoogleMap.moveCamera(cameraUpdate);
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
