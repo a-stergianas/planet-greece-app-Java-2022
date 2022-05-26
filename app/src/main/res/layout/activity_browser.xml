@@ -23,8 +23,6 @@
             android:background="@drawable/ic_baseline_arrow_back_24"
             android:backgroundTint="@color/white"
             android:textColor="@color/secondary_green"
-            android:textSize="20dp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

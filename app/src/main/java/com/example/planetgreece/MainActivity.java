@@ -54,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navSaved:
                         fragment = SavedFragment.newInstance(user);
                         break;
-                    case R.id.navMap:
-                        fragment = MapFragment.newInstance(user);
-                        break;
                     case R.id.navProfile:
                         fragment = ProfileFragment.newInstance(user);
                         break;
