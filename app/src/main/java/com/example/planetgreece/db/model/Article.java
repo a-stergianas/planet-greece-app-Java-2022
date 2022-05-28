@@ -20,8 +20,8 @@ public class Article implements Serializable {
         this.image = image;
         this.siteName = siteName;
         this.link = link;
+        this.likes = 0;
         this.createdAt = createdAt;
-        likes = 0;
     }
 
     public int getId() {
@@ -42,6 +42,10 @@ public class Article implements Serializable {
 
     public String getLink() {
         return link;
+    }
+
+    public int getLikes() {
+        return likes;
     }
 
     public String getCreatedAt() {
@@ -66,6 +70,18 @@ public class Article implements Serializable {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        this.likes--;
     }
 
     public void setCreatedAt(String createdAt) {
