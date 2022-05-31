@@ -89,7 +89,7 @@ public class ProfileFragment extends Fragment {
 
         mUser = db.getUser(mUser.getId());
 
-        btnLogout = view.findViewById(R.id.btnBack);
+        btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
             db.closeDb();
 

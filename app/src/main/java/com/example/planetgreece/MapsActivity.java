@@ -45,7 +45,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        btnBack = findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnLogout);
         btnBack.setOnClickListener(v -> finish());
 //        fab = findViewById(R.id.fab);
 
