@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         btnMaps.setOnClickListener(v -> startActivity(new Intent (getActivity(), MapsActivity.class)));
 
                 // Get articles from database
-        articleList = (ArrayList<Article>) db.getArticles();
+        articleList = (ArrayList<Article>) db.getArticles(mUser.getId());
 
         // Display articles in recycler view
         setArticleAdapter();

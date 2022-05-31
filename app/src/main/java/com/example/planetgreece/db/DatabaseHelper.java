@@ -23,7 +23,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 6;
+    private static final int DB_VERSION = 8;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String USERS_IS_ADMIN = "is_admin";
     private static final String USERS_SAVED_ARTICLES = "saved_articles";
     private static final String USERS_LIKED_ARTICLES = "liked_articles";
+    private static final String USERS_PREFERRED_SITES = "preferred_sites";
 
     // ARTICLES
     private static final String ARTICLES_TITLE = "title";
@@ -65,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "%s INTEGER DEFAULT 0," +
                     "%s TEXT," +
                     "%s TEXT," +
+                    "%s TEXT," +
                     "%s DATETIME" +
                 ")",
                     TABLE_USERS,
@@ -77,6 +79,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     USERS_IS_ADMIN,
                     USERS_SAVED_ARTICLES,
                     USERS_LIKED_ARTICLES,
+                    USERS_PREFERRED_SITES,
                     KEY_CREATED_AT);
 
     private static final String CREATE_TABLE_ARTICLES =
@@ -189,6 +192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
         user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
         user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+        user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         return user;
@@ -224,6 +228,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
         user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
         user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+        user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
@@ -270,6 +275,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
                 user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
                 user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+                user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
                 user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 users.add(user);
@@ -580,6 +586,102 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         updateArticle(a);
     }
 
+    public boolean isSiteInPreferred(int userId, String siteName) {
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return false;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getPreferredSites() == null)
+            return false;
+
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.equals(siteName)) {
+                System.out.println("Site found in preferred sites");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addToPreferredSites(int userId, String siteName) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+        ArrayList<String> preferredSites = new ArrayList<>();
+
+        if (user.getPreferredSites() != null) {
+            String[] split = user.getPreferredSites().split(",");
+
+            for (String s : split) {
+                if (s.equals(siteName)) {
+                    System.out.println("Site already in preferred sites");
+                    return;
+                }
+
+                preferredSites.add(s);
+            }
+        }
+
+        preferredSites.add(siteName);
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_PREFERRED_SITES, TextUtils.join(",", preferredSites));
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
+    public void removeFromPreferredSites(int userId, String siteName) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getPreferredSites() == null) {
+            System.out.println("User does not have any preferred sites");
+            return;
+        }
+
+        ArrayList<String> preferredSites = new ArrayList<>();
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.equals(siteName)) {
+                continue;
+            }
+
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            preferredSites.add(s);
+        }
+
+        ContentValues values = new ContentValues();
+
+        if (preferredSites.size() == 0) {
+            values.putNull(USERS_PREFERRED_SITES);
+        } else {
+            values.put(USERS_PREFERRED_SITES, TextUtils.join(",", preferredSites));
+        }
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
     @SuppressLint("Range")
     public List<Article> getSavedArticles(long id) {
         if (!userExists(id)) {
@@ -597,9 +699,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Article> savedArticles = new ArrayList<>();
         String[] split = user.getSavedArticles().split(",");
 
-        System.out.println(user.getSavedArticles());
-        System.out.println(split);
-
         for (String s : split) {
             Article article = getArticle(Integer.parseInt(s));
             savedArticles.add(article);
@@ -608,6 +707,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Collections.reverse(savedArticles);
 
         return savedArticles;
+    }
+
+    public List<String> getPreferredSites(long id) {
+        if (!userExists(id)) {
+            System.out.println("User does not exist");
+            return null;
+        }
+
+        User user = getUser(id);
+
+        if (user.getPreferredSites() == null) {
+            System.out.println("User does not have any preferred sites");
+            return null;
+        }
+
+        ArrayList<String> preferredSites = new ArrayList<>();
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            preferredSites.add(s);
+        }
+
+        return preferredSites;
     }
 
     /**********************************************************************************************
@@ -682,26 +808,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public List<Article> getArticles() {
+    public List<Article> getArticles(int userId) {
         SQLiteDatabase db = getReadableDatabase();
         String query = String.format(Locale.getDefault(), "SELECT * FROM %s ORDER BY created_at DESC", TABLE_ARTICLES);
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
         List<Article> articles = new ArrayList<>();
+        List<String> preferredSites = getPreferredSites(userId);
 
         if (c.moveToFirst()) {
-            do {
-                Article article = new Article();
-                article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-                article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
-                article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
-                article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
-                article.setLikes(c.getInt(c.getColumnIndex(ARTICLES_LIKES)));
-                article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+            // If user has no preferred sites, return all articles
+            // Otherwise, return only articles from preferred sites
 
-                articles.add(article);
+            do {
+                String siteName = c.getString(c.getColumnIndex(ARTICLES_SITE_NAME));
+
+                if (preferredSites == null || preferredSites.contains(siteName)) {
+                    Article article = new Article();
+                    article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                    article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
+                    article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
+                    article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
+                    article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
+                    article.setLikes(c.getInt(c.getColumnIndex(ARTICLES_LIKES)));
+                    article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+                    articles.add(article);
+                }
             } while (c.moveToNext());
         }
 
