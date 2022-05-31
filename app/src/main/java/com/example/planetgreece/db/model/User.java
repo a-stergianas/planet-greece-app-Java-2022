@@ -11,6 +11,8 @@ public class User implements Serializable {
     private String salt;
     private boolean isAdmin;
     private String savedArticles;
+    private String likedArticles;
+    private String preferredSites;
     private String createdAt;
 
     public User() {
@@ -49,6 +51,14 @@ public class User implements Serializable {
         return savedArticles;
     }
 
+    public String getLikedArticles() {
+        return likedArticles;
+    }
+
+    public String getPreferredSites() {
+        return preferredSites;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }
@@ -83,6 +93,14 @@ public class User implements Serializable {
 
     public void setSavedArticles(String savedArticles) {
         this.savedArticles = savedArticles;
+    }
+
+    public void setLikedArticles(String likedArticles) {
+        this.likedArticles = likedArticles;
+    }
+
+    public void setPreferredSites(String preferredSites) {
+        this.preferredSites = preferredSites;
     }
 
     public void setCreatedAt(String createdAt) {

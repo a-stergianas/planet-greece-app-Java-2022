@@ -10,10 +10,6 @@
         android:icon="@drawable/ic_baseline_bookmarks_24"
         android:title="Saved" />
     <item
-        android:id="@+id/navMap"
-        android:icon="@drawable/ic_baseline_add_location_24"
-        android:title="Map" />
-    <item
         android:id="@+id/navProfile"
         android:icon="@drawable/ic_baseline_person_24"
         android:title="Profile" />

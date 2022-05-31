@@ -1,6 +1,7 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.content.Intent;
+import android.location.GnssAntennaInfo;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.example.planetgreece.BrowserActivity;
+import com.example.planetgreece.MapsActivity;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
@@ -35,6 +38,8 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     private ArrayList<Article> articleList;
     private RecyclerView recyclerView;
+
+    private ImageButton btnMaps;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -78,8 +83,11 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view.findViewById(R.id.rvArticles);
 
-        // Get articles from database
-        articleList = (ArrayList<Article>) db.getArticles();
+        btnMaps = view.findViewById(R.id.btnMaps);
+        btnMaps.setOnClickListener(v -> startActivity(new Intent (getActivity(), MapsActivity.class)));
+
+                // Get articles from database
+        articleList = (ArrayList<Article>) db.getArticles(mUser.getId());
 
         // Display articles in recycler view
         setArticleAdapter();

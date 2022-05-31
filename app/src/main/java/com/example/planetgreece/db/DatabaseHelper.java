@@ -23,7 +23,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 8;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -43,12 +43,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String USERS_SALT = "salt";
     private static final String USERS_IS_ADMIN = "is_admin";
     private static final String USERS_SAVED_ARTICLES = "saved_articles";
+    private static final String USERS_LIKED_ARTICLES = "liked_articles";
+    private static final String USERS_PREFERRED_SITES = "preferred_sites";
 
     // ARTICLES
     private static final String ARTICLES_TITLE = "title";
     private static final String ARTICLES_IMAGE = "image";
     private static final String ARTICLES_SITE_NAME = "site_name";
     private static final String ARTICLES_LINK = "link";
+    private static final String ARTICLES_LIKES = "likes";
 
     // Create tables
     private static final String CREATE_TABLE_USERS =
@@ -62,6 +65,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "%s TEXT," +
                     "%s INTEGER DEFAULT 0," +
                     "%s TEXT," +
+                    "%s TEXT," +
+                    "%s TEXT," +
                     "%s DATETIME" +
                 ")",
                     TABLE_USERS,
@@ -73,6 +78,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     USERS_SALT,
                     USERS_IS_ADMIN,
                     USERS_SAVED_ARTICLES,
+                    USERS_LIKED_ARTICLES,
+                    USERS_PREFERRED_SITES,
                     KEY_CREATED_AT);
 
     private static final String CREATE_TABLE_ARTICLES =
@@ -83,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "%s INTEGER," +
                     "%s TEXT," +
                     "%s TEXT," +
+                    "%s INTEGER DEFAULT 0," +
                     "%s DATETIME" +
                 ")",
                     TABLE_ARTICLES,
@@ -91,6 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ARTICLES_IMAGE,
                     ARTICLES_SITE_NAME,
                     ARTICLES_LINK,
+                    ARTICLES_LIKES,
                     KEY_CREATED_AT);
 
     public DatabaseHelper(Context context) {
@@ -182,6 +191,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) == 1);
         user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
+        user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+        user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         return user;
@@ -216,6 +227,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
         user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
         user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
+        user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+        user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
         user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
@@ -261,6 +274,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setSalt(c.getString(c.getColumnIndex(USERS_SALT)));
                 user.setIsAdmin(c.getInt(c.getColumnIndex(USERS_IS_ADMIN)) > 0);
                 user.setSavedArticles(c.getString(c.getColumnIndex(USERS_SAVED_ARTICLES)));
+                user.setLikedArticles(c.getString(c.getColumnIndex(USERS_LIKED_ARTICLES)));
+                user.setPreferredSites(c.getString(c.getColumnIndex(USERS_PREFERRED_SITES)));
                 user.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 users.add(user);
@@ -277,6 +292,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 //        String query = String.format(Locale.getDefault(), "DELETE FROM %s WHERE %s = %d", TABLE_USERS, KEY_ID, id);
 //        Cursor c = db.rawQuery(query, null);
+
+        // When deleting a user, we should delete all likes for the articles that the user has liked.
+        // Work on that if we have the time before the deadline.
 
         db.delete(TABLE_USERS, KEY_ID + " = ?", new String[] { String.valueOf(id) });
     }
@@ -297,7 +315,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_SALT, user.getSalt());
         values.put(USERS_IS_ADMIN, user.getIsAdmin() ? 1 : 0);
 //        values.put(KEY_CREATED_AT, "datetime('now')");
-        values.put(KEY_CREATED_AT, getDate());
+        values.put(KEY_CREATED_AT, getDateTime());
 
         long id = db.insert(TABLE_USERS, null, values);
 
@@ -335,7 +353,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isArticleInSaved(int userId, int articleId) {
-        SQLiteDatabase db = getReadableDatabase();
+//        SQLiteDatabase db = getReadableDatabase();
 
         if (!userExists(userId)) {
             System.out.println("User does not exist");
@@ -357,6 +375,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (String s : split) {
             if (s.equals(String.valueOf(articleId))) {
                 System.out.println("Article found in saved articles");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isArticleInLiked(int userId, int articleId) {
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return false;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return false;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getLikedArticles() == null)
+            return false;
+
+        String[] split = user.getLikedArticles().split(",");
+
+        for (String s : split) {
+            if (s.equals(String.valueOf(articleId))) {
+                System.out.println("Article found in liked articles");
                 return true;
             }
         }
@@ -399,6 +445,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_SAVED_ARTICLES, TextUtils.join(",", savedArticles));
 
         db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
+    public void addArticleToLiked(int userId, int articleId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+        ArrayList<String> likedArticles = new ArrayList<>();
+
+        if (user.getLikedArticles() != null) {
+            String[] split = user.getLikedArticles().split(",");
+
+            for (String s : split) {
+                if (s.equals(String.valueOf(articleId))) {
+                    System.out.println("Article already saved");
+                    return;
+                }
+
+                likedArticles.add(s);
+            }
+        }
+
+        likedArticles.add(String.valueOf(articleId));
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_LIKED_ARTICLES, TextUtils.join(",", likedArticles));
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+
+        // increment article likes
+        Article a = getArticle(articleId);
+        a.incrementLikes();
+        updateArticle(a);
     }
 
     public void removeArticleFromSaved(int userId, int articleId) {
@@ -447,6 +535,153 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
     }
 
+    public void removeArticleFromLiked(int userId, int articleId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        if (!articleExists(articleId)) {
+            System.out.println("Article does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getLikedArticles() == null) {
+            System.out.println("User does not have any saved articles");
+            return;
+        }
+
+        ArrayList<String> likedArticles = new ArrayList<>();
+        String[] split = user.getLikedArticles().split(",");
+
+        for (String s : split) {
+            if (s.equals(String.valueOf(articleId))) {
+                continue;
+            }
+
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            likedArticles.add(String.valueOf(s));
+        }
+
+        ContentValues values = new ContentValues();
+
+        if (likedArticles.size() == 0) {
+            values.putNull(USERS_LIKED_ARTICLES);
+        } else {
+            values.put(USERS_LIKED_ARTICLES, TextUtils.join(",", likedArticles));
+        }
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+
+        // decrement article likes
+        Article a = getArticle(articleId);
+        a.decrementLikes();
+        updateArticle(a);
+    }
+
+    public boolean isSiteInPreferred(int userId, String siteName) {
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return false;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getPreferredSites() == null)
+            return false;
+
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.equals(siteName)) {
+                System.out.println("Site found in preferred sites");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void addToPreferredSites(int userId, String siteName) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+        ArrayList<String> preferredSites = new ArrayList<>();
+
+        if (user.getPreferredSites() != null) {
+            String[] split = user.getPreferredSites().split(",");
+
+            for (String s : split) {
+                if (s.equals(siteName)) {
+                    System.out.println("Site already in preferred sites");
+                    return;
+                }
+
+                preferredSites.add(s);
+            }
+        }
+
+        preferredSites.add(siteName);
+
+        ContentValues values = new ContentValues();
+        values.put(USERS_PREFERRED_SITES, TextUtils.join(",", preferredSites));
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
+    public void removeFromPreferredSites(int userId, String siteName) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        if (!userExists(userId)) {
+            System.out.println("User does not exist");
+            return;
+        }
+
+        User user = getUser(userId);
+
+        if (user.getPreferredSites() == null) {
+            System.out.println("User does not have any preferred sites");
+            return;
+        }
+
+        ArrayList<String> preferredSites = new ArrayList<>();
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.equals(siteName)) {
+                continue;
+            }
+
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            preferredSites.add(s);
+        }
+
+        ContentValues values = new ContentValues();
+
+        if (preferredSites.size() == 0) {
+            values.putNull(USERS_PREFERRED_SITES);
+        } else {
+            values.put(USERS_PREFERRED_SITES, TextUtils.join(",", preferredSites));
+        }
+
+        db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(userId) });
+    }
+
     @SuppressLint("Range")
     public List<Article> getSavedArticles(long id) {
         if (!userExists(id)) {
@@ -464,9 +699,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<Article> savedArticles = new ArrayList<>();
         String[] split = user.getSavedArticles().split(",");
 
-        System.out.println(user.getSavedArticles());
-        System.out.println(split);
-
         for (String s : split) {
             Article article = getArticle(Integer.parseInt(s));
             savedArticles.add(article);
@@ -475,6 +707,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Collections.reverse(savedArticles);
 
         return savedArticles;
+    }
+
+    public List<String> getPreferredSites(long id) {
+        if (!userExists(id)) {
+            System.out.println("User does not exist");
+            return null;
+        }
+
+        User user = getUser(id);
+
+        if (user.getPreferredSites() == null) {
+            System.out.println("User does not have any preferred sites");
+            return null;
+        }
+
+        ArrayList<String> preferredSites = new ArrayList<>();
+        String[] split = user.getPreferredSites().split(",");
+
+        for (String s : split) {
+            if (s.isEmpty() || s.trim().isEmpty()) {
+                continue;
+            }
+
+            preferredSites.add(s);
+        }
+
+        return preferredSites;
     }
 
     /**********************************************************************************************
@@ -540,6 +799,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
         article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
         article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
+        article.setLikes(c.getInt(c.getColumnIndex(ARTICLES_LIKES)));
         article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         c.close();
@@ -548,25 +808,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public List<Article> getArticles() {
+    public List<Article> getArticles(int userId) {
         SQLiteDatabase db = getReadableDatabase();
         String query = String.format(Locale.getDefault(), "SELECT * FROM %s ORDER BY created_at DESC", TABLE_ARTICLES);
 
         @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
 
         List<Article> articles = new ArrayList<>();
+        List<String> preferredSites = getPreferredSites(userId);
 
         if (c.moveToFirst()) {
-            do {
-                Article article = new Article();
-                article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
-                article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
-                article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
-                article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
-                article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+            // If user has no preferred sites, return all articles
+            // Otherwise, return only articles from preferred sites
 
-                articles.add(article);
+            do {
+                String siteName = c.getString(c.getColumnIndex(ARTICLES_SITE_NAME));
+
+                if (preferredSites == null || preferredSites.contains(siteName)) {
+                    Article article = new Article();
+                    article.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                    article.setTitle(c.getString(c.getColumnIndex(ARTICLES_TITLE)));
+                    article.setImage(c.getString(c.getColumnIndex(ARTICLES_IMAGE)));
+                    article.setSiteName(c.getString(c.getColumnIndex(ARTICLES_SITE_NAME)));
+                    article.setLink(c.getString(c.getColumnIndex(ARTICLES_LINK)));
+                    article.setLikes(c.getInt(c.getColumnIndex(ARTICLES_LIKES)));
+                    article.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+                    articles.add(article);
+                }
             } while (c.moveToNext());
         }
 
@@ -593,7 +862,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLES_IMAGE, article.getImage());
         values.put(ARTICLES_SITE_NAME, article.getSiteName());
         values.put(ARTICLES_LINK, article.getLink());
-        values.put(KEY_CREATED_AT, getDate());
+        values.put(KEY_CREATED_AT, Helper.getTimestampByDateString(article.getCreatedAt()));
+//        values.put(KEY_CREATED_AT, getDate());
 
         long id = db.insert(TABLE_ARTICLES, null, values);
 
@@ -609,6 +879,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLES_IMAGE, article.getImage());
         values.put(ARTICLES_SITE_NAME, article.getSiteName());
         values.put(ARTICLES_LINK, article.getLink());
+        values.put(ARTICLES_LIKES, article.getLikes());
 
         db.update(TABLE_ARTICLES, values, KEY_ID + " = ?", new String[] { String.valueOf(article.getId()) });
     }
@@ -623,9 +894,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.close();
     }
 
-    public static String getDate() {
+    public static String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "dd-MM-yyyy", Locale.getDefault());
+                "dd-MM-yyyy HH:mm:ss", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
     }

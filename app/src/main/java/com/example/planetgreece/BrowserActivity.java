@@ -32,7 +32,7 @@ public class BrowserActivity extends AppCompatActivity {
 
         link = getIntent().getStringExtra("LINK");
 
-        btnBack = findViewById(R.id.btnBack);
+        btnBack = findViewById(R.id.btnLogout);
         btnBack.setOnClickListener(v -> finish());
 
         webView = (WebView) findViewById(R.id.wvBrowser);

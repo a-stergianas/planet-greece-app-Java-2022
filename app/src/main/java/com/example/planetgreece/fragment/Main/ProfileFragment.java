@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.planetgreece.AddArticleActivity;
 import com.example.planetgreece.ChangePasswordActivity;
 import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.LoginActivity;
@@ -38,6 +40,7 @@ public class ProfileFragment extends Fragment {
     private User mUser;
 
     private TextView btnLogout; // btnLogout is actually a TextView :D
+    private TextView btnAddArticle;
     private TextView tvFullName;
     private TextView tvFirstName;
     private TextView tvLastName;
@@ -89,7 +92,7 @@ public class ProfileFragment extends Fragment {
 
         mUser = db.getUser(mUser.getId());
 
-        btnLogout = view.findViewById(R.id.btnBack);
+        btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
             db.closeDb();
 
@@ -98,6 +101,24 @@ public class ProfileFragment extends Fragment {
 
             startActivity(intent);
             getActivity().finish();
+        });
+
+        btnAddArticle = view.findViewById(R.id.btnAddArticle);
+
+        if (!mUser.getIsAdmin())
+            btnAddArticle.setVisibility(View.GONE);
+        else
+            btnAddArticle.setVisibility(View.VISIBLE);
+
+        btnAddArticle.setOnClickListener(v -> {
+            if (!mUser.getIsAdmin()) {
+                Toast.makeText(getContext(), "You are not an admin!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(getContext(), AddArticleActivity.class);
+            intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
+            resultLauncher.launch(intent);
         });
 
         btnEditProfile = view.findViewById(R.id.btnEditProfile);

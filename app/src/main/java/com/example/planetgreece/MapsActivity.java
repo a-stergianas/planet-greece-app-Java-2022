@@ -11,8 +11,8 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,12 +38,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     FloatingActionButton fab;
     GoogleMap mGoogleMap;
     private int GPS_REQUEST_CODE = 9001;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        btnBack = findViewById(R.id.btnLogout);
+        btnBack.setOnClickListener(v -> finish());
 //        fab = findViewById(R.id.fab);
 
         checkMyPermission();

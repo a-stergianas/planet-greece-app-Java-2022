@@ -3,6 +3,16 @@ package com.example.planetgreece.common;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
+import java.util.Locale;
 
 public class Helper {
     public static String generateRandomString(int length) {
@@ -58,5 +68,39 @@ public class Helper {
         if (text.isEmpty())
             return null;
         return text.substring(0, 1).toUpperCase() + text.substring(1, text.length());
+    }
+
+    public static String getTimestampByDateString(String dateString) {
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            Date parsedDate = dateFormat.parse(dateString);
+            Timestamp timestamp = new Timestamp(parsedDate.getTime());
+
+            return timestamp.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // https://stackoverflow.com/a/20232680
+    public static boolean isValidDate(String dateString) {
+        Date date = null;
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            dateFormat.setLenient(false);
+
+            date = dateFormat.parse(dateString);
+            if (!dateString.equals(dateFormat.format(date))) {
+                date = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (date == null)
+            return false;
+
+        return true;
     }
 }
