@@ -62,7 +62,14 @@ public class SignupTabFragment extends Fragment {
             user.setEmail(email);
             user.setSalt(Helper.generateRandomString(32));
             user.setPassword(Helper.encryptPassword(password, user.getSalt()));
-            user.setIsAdmin(false);
+
+            // For testing purposes,
+            // if the user is signing up with the email admin@admin.com
+            // then set the user as admin
+            if (email.equals("admin@admin.com"))
+                user.setIsAdmin(true);
+            else
+                user.setIsAdmin(false);
 
             long id = db.createUser(user);
             if (id != -1) {

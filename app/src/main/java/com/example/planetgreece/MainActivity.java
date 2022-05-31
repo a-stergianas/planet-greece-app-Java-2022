@@ -32,7 +32,13 @@ public class MainActivity extends AppCompatActivity {
 
         db = DatabaseHelper.getInstance(getApplicationContext());
 
-        addArticles();//Add articles
+        /**
+         * DEBUGGING
+         */
+        addArticles(); //Add articles
+        /**
+         * END DEBUGGING
+         */
 
         Intent intent = getIntent();
         User user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
@@ -75,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void addArticles() {
-
         db.createArticle(new Article(
                 "Θωμάς ο… Survivor!",
                 "https://www.arcturos.gr/files/temp/88E1A30F5464E88732B0F8459DECE63D.jpg",

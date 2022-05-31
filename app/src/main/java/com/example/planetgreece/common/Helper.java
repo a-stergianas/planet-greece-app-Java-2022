@@ -6,6 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.Locale;
 
@@ -76,5 +81,26 @@ public class Helper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // https://stackoverflow.com/a/20232680
+    public static boolean isValidDate(String dateString) {
+        Date date = null;
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            dateFormat.setLenient(false);
+
+            date = dateFormat.parse(dateString);
+            if (!dateString.equals(dateFormat.format(date))) {
+                date = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (date == null)
+            return false;
+
+        return true;
     }
 }

@@ -127,14 +127,13 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                     db.addArticleToLiked(userId, articleId);
                     viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.secondary_green));
                     likes[0] = likes[0] + 1;
-                    viewHolder.likes.setText(likes[0] + " likes");
                     // unnecessary toast message
                 } else {
                     db.removeArticleFromLiked(userId, articleId);
                     viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.white));
                     likes[0] = likes[0] - 1;
-                    viewHolder.likes.setText(likes[0] + " likes");
                 }
+                viewHolder.likes.setText(likes[0] + " likes");
             }
         });
     }

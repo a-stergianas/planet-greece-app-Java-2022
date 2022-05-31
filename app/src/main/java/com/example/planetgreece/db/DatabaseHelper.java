@@ -23,7 +23,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 6;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
