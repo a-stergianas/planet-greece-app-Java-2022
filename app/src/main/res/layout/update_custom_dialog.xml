@@ -105,7 +105,7 @@
         android:paddingRight="10dp"
         android:maxLength="20"
         android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
+        app:layout_constraintBottom_toTopOf="@+id/btn_delete"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
@@ -122,7 +122,7 @@
         app:layout_constraintTop_toBottomOf="@+id/inputText" />
 
     <Button
-        android:id="@+id/btn_cancel"
+        android:id="@+id/btn_delete"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -130,7 +130,7 @@
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
         android:stateListAnimator="@null"
-        android:text="Cancel"
+        android:text="Delete"
         android:textAllCaps="false"
         android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -139,7 +139,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_okey"
+        android:id="@+id/btn_update"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -147,7 +147,7 @@
         android:layout_marginBottom="20dp"
         android:background="@android:color/transparent"
         android:stateListAnimator="@null"
-        android:text="Okay"
+        android:text="Update"
         android:textAllCaps="false"
         android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"

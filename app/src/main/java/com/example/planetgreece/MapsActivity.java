@@ -29,6 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -38,7 +39,6 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
     private FusedLocationProviderClient mLocationClient;
@@ -48,6 +48,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ImageButton btnBack;
     ArrayList<LatLng> locations;
     Dialog dialog;
+    Dialog editDialog;
     TextView inputText;
     CheckBox infCheckBox;
     CheckBox impCheckBox;
@@ -65,13 +66,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(false);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        editDialog = new Dialog(MapsActivity.this);
+        editDialog.setContentView(R.layout.update_custom_dialog);
+        editDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.dialog_background));
+        editDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        editDialog.setCancelable(false);
+        editDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
         btnBack = findViewById(R.id.btnLogout);
         btnBack.setOnClickListener(v -> finish());
 
-        Button okey = dialog.findViewById(R.id.btn_okay);
+        Button okey = dialog.findViewById(R.id.btn_okey);
         Button cancel = dialog.findViewById(R.id.btn_cancel);
-        
+        Button update = editDialog.findViewById(R.id.btn_update);
+        Button delete = editDialog.findViewById(R.id.btn_delete);
+
+
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MapsActivity.this, "UPDATE", Toast.LENGTH_SHORT).show();
+                editDialog.dismiss();
+            }
+        });
+
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MapsActivity.this, "DELETE", Toast.LENGTH_SHORT).show();
+                editDialog.dismiss();
+            }
+        });
+
         okey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,8 +145,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialog.dismiss();
             }
         });
-
-
 
         checkMyPermission();
         initMap();
@@ -248,11 +273,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
+        LatLng sydney = new LatLng(40.629269, 22.947412);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 locations.add(point);
                 dialog.show();
+            }
+        });
+
+        mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(@NonNull LatLng latLng) {
+                editDialog.show();
+            }
+        });
+
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                System.out.println("EDWW");
+                System.out.println(marker);
+                System.out.println(marker.getTitle());
+                System.out.println(marker.getSnippet());
+                System.out.println(marker.getPosition().latitude);
+                System.out.println(marker.getPosition().longitude);
+                System.out.println(locations.contains(marker.getPosition()));
+                System.out.println(locations);
+                return false;
             }
         });
     }
