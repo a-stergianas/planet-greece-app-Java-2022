@@ -129,21 +129,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 deleteMarker(marker);
                 if (infCheckBox.isChecked()) {
                     String type = infCheckBox.getText().toString();
-                    updateMarker(latLng, message, type);
+                    createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
                     inputText.setText("");
                     infCheckBox.setChecked(false);
                     editDialog.dismiss();
                 } else if (impCheckBox.isChecked()) {
                     String type = impCheckBox.getText().toString();
-                    updateMarker(latLng, message, type);
+                    createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
                     impCheckBox.setChecked(false);
                     inputText.setText("");
                     editDialog.dismiss();
                 } else if (danCheckBox.isChecked()) {
                     String type = danCheckBox.getText().toString();
-                    updateMarker(latLng, message, type);
+                    createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
                     inputText.setText("");
                     danCheckBox.setChecked(false);
@@ -182,21 +182,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 if (infCheckBox.isChecked()) {
                     String type = infCheckBox.getText().toString();
-                    createMarker(message, type);
+                    createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
                     inputText.setText("");;
                     infCheckBox.setChecked(false);
                     dialog.dismiss();
                 } else if (impCheckBox.isChecked()) {
                     String type = impCheckBox.getText().toString();
-                    createMarker(message, type);
+                    createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
                     impCheckBox.setChecked(false);
                     inputText.setText("");;
                     dialog.dismiss();
                 } else if (danCheckBox.isChecked()) {
                     String type = danCheckBox.getText().toString();
-                    createMarker(message, type);
+                    createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
                     inputText.setText("");;
                     danCheckBox.setChecked(false);
@@ -212,7 +212,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 initFields(dialog);
 
-                disableAllCheckBox();
+                disableAllCheckBoxes();
 
                 inputText.setText("");
                 int index = locations.size() - 1;
@@ -252,39 +252,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return currentMarkerModel;
     }
 
-    private void updateMarker(LatLng point, String message, String type) {
-        if (type.equals("Danger")) {
-            mGoogleMap.addMarker(
-                    new MarkerOptions()
-                            .position(point)
-                            .title(type)
-                            .snippet(message)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-            );
-        }
-
-        if (type.equals("Information")) {
-            mGoogleMap.addMarker(
-                    new MarkerOptions()
-                            .position(point)
-                            .title(type)
-                            .snippet(message)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-            );
-        }
-
-        if(type.equals("Important")) {
-            mGoogleMap.addMarker(
-                    new MarkerOptions()
-                            .position(point)
-                            .title(type)
-                            .snippet(message)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-            );
-        }
-    }
-
-    private void disableAllCheckBox(){
+    private void disableAllCheckBoxes(){
         infCheckBox.setChecked(false);
         impCheckBox.setChecked(false);
         danCheckBox.setChecked(false);
@@ -297,11 +265,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         danCheckBox = dialog.findViewById(R.id.danCheckBox);
     }
 
-    private void createMarker(String message, String type) {
+    private void createMarker(LatLng point, String message, String type) {
         if (type.equals("Danger")) {
             mGoogleMap.addMarker(
                     new MarkerOptions()
-                            .position(locations.get(locations.size() - 1))
+                            .position(point)
                             .title(type)
                             .snippet(message)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
@@ -311,7 +279,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (type.equals("Information")) {
             mGoogleMap.addMarker(
                     new MarkerOptions()
-                            .position(locations.get(locations.size() - 1))
+                            .position(point)
                             .title(type)
                             .snippet(message)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
@@ -321,7 +289,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if(type.equals("Important")) {
             mGoogleMap.addMarker(
                     new MarkerOptions()
-                            .position(locations.get(locations.size() - 1))
+                            .position(point)
                             .title(type)
                             .snippet(message)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
@@ -447,8 +415,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
 
-        LatLng sydney = new LatLng(40.629269, 22.947412);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
+        LatLng thessaloniki = new LatLng(40.629269, 22.947412);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(thessaloniki, 12));
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -471,17 +439,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String type = marker.getTitle();
 
                 if (type.equals("Information")) {
+                    disableAllCheckBoxes();
                     infCheckBox.setChecked(true);
-                    impCheckBox.setChecked(false);
-                    danCheckBox.setChecked(false);
                 } else if (type.equals("Danger")) {
-                    infCheckBox.setChecked(false);
-                    impCheckBox.setChecked(false);
+                    disableAllCheckBoxes();
                     danCheckBox.setChecked(true);
                 } else if (type.equals("Important")) {
-                    infCheckBox.setChecked(false);
+                    disableAllCheckBoxes();
                     impCheckBox.setChecked(true);
-                    danCheckBox.setChecked(false);
                 }
 
                 inputText.setText(marker.getSnippet());
@@ -515,7 +480,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             locations.add(mark.getLatLng());
-            createMarker(mark.getMessage(), mark.getType());
+            createMarker(locations.get(locations.size() - 1), mark.getMessage(), mark.getType());
         }
     }
 
