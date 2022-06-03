@@ -474,6 +474,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 if (markFinishDate.before(currentDate)) {
                     db.deleteMark(mark.getId());
+                    continue;
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
