@@ -100,17 +100,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 initFields(editDialog);
                 marker.remove();
                 if(infCheckBox.isChecked()){
-                    updateMarker(latLng,inputText.getText().toString(),infCheckBox.getText().toString());
+                    createMarker(latLng,inputText.getText().toString(),infCheckBox.getText().toString());
                     inputText.setText("");;
                     infCheckBox.setChecked(false);
                     editDialog.dismiss();
                 }else if(impCheckBox.isChecked()){
-                    updateMarker(latLng,inputText.getText().toString(),impCheckBox.getText().toString());
+                    createMarker(latLng,inputText.getText().toString(),impCheckBox.getText().toString());
                     impCheckBox.setChecked(false);
                     inputText.setText("");;
                     editDialog.dismiss();
                 }else if(danCheckBox.isChecked()){
-                    updateMarker(latLng,inputText.getText().toString(),danCheckBox.getText().toString());
+                    createMarker(latLng,inputText.getText().toString(),danCheckBox.getText().toString());
                     inputText.setText("");;
                     danCheckBox.setChecked(false);
                     editDialog.dismiss();
@@ -135,17 +135,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 initFields(dialog);
                 if(infCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),infCheckBox.getText().toString());
+                    createMarker(locations.get(locations.size() - 1),inputText.getText().toString(),infCheckBox.getText().toString());
                     inputText.setText("");;
                     infCheckBox.setChecked(false);
                     dialog.dismiss();
                 }else if(impCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),impCheckBox.getText().toString());
+                    createMarker(locations.get(locations.size() - 1),inputText.getText().toString(),impCheckBox.getText().toString());
                     impCheckBox.setChecked(false);
                     inputText.setText("");;
                     dialog.dismiss();
                 }else if(danCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),danCheckBox.getText().toString());
+                    createMarker(locations.get(locations.size() - 1),inputText.getText().toString(),danCheckBox.getText().toString());
                     inputText.setText("");;
                     danCheckBox.setChecked(false);
                     dialog.dismiss();
@@ -185,7 +185,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return this.currentMarker;
     }
 
-    public void updateMarker(LatLng latLng, String message, String type){
+    public void createMarker(LatLng latLng, String message, String type){
         if (type.equals("Danger")){
             mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         }
@@ -195,19 +195,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if(type.equals("Important")){
             mGoogleMap.addMarker(new MarkerOptions().position(latLng).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        }
-    }
-
-    public void createMarker(String message,String type){
-        if (type.equals("Danger")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        }
-        if (type.equals("Information")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-        }
-
-        if(type.equals("Important")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         }
     }
 
@@ -349,17 +336,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onInfoWindowClick(@NonNull Marker marker) {
                 initFields(editDialog);
                 if(marker.getTitle().equals("Information")){
+                    disableAllCheckBox();
                     infCheckBox.setChecked(true);
-                    impCheckBox.setChecked(false);
-                    danCheckBox.setChecked(false);
                 }else if(marker.getTitle().equals("Danger")){
-                    infCheckBox.setChecked(false);
-                    impCheckBox.setChecked(false);
+                    disableAllCheckBox();
                     danCheckBox.setChecked(true);
                 }else if(marker.getTitle().equals("Important")){
-                    infCheckBox.setChecked(false);
+                    disableAllCheckBox();
                     impCheckBox.setChecked(true);
-                    danCheckBox.setChecked(false);
                 }
                 inputText.setText(marker.getSnippet());
                 setCurrentMarker(marker);
