@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.model.Article;
+import com.example.planetgreece.db.model.Mark;
 import com.example.planetgreece.db.model.User;
 
 import java.text.SimpleDateFormat;
@@ -23,13 +24,14 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 8;
+    private static final int DB_VERSION = 5;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
     // Tables
     private static final String TABLE_USERS = "users";
     private static final String TABLE_ARTICLES = "articles";
+    private static final String TABLE_MARKS = "marks";
 
     // Common column names
     private static final String KEY_ID = "id";
@@ -52,6 +54,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String ARTICLES_SITE_NAME = "site_name";
     private static final String ARTICLES_LINK = "link";
     private static final String ARTICLES_LIKES = "likes";
+
+    // MARKS
+    private static final String MARKS_USER_ID = "user_id";
+    private static final String MARKS_TYPE = "type";
+    private static final String MARKS_MESSAGE = "message";
+    private static final String MARKS_LATITUDE = "latitude";
+    private static final String MARKS_LONGITUDE = "longitude";
 
     // Create tables
     private static final String CREATE_TABLE_USERS =
@@ -102,6 +111,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ARTICLES_LIKES,
                     KEY_CREATED_AT);
 
+    private static final String CREATE_TABLE_MARKS =
+            String.format("CREATE TABLE %s" +
+                "(" +
+                    "%s INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "%s INTEGER," +
+                    "%s TEXT," +
+                    "%s TEXT," +
+                    "%s REAL," +
+                    "%s REAL," +
+                    "%s DATETIME" +
+                ")",
+                    TABLE_MARKS,
+                    KEY_ID,
+                    MARKS_USER_ID,
+                    MARKS_TYPE,
+                    MARKS_MESSAGE,
+                    MARKS_LATITUDE,
+                    MARKS_LONGITUDE,
+                    KEY_CREATED_AT);
+
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -110,12 +139,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_ARTICLES);
+        db.execSQL(CREATE_TABLE_MARKS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ARTICLES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKS);
 
         onCreate(db);
     }
@@ -349,6 +380,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERS_SALT, newSalt);
 
         db.update(TABLE_USERS, values, KEY_ID + " = ?", new String[] { String.valueOf(id) });
+        return true;
+    }
+
+    public boolean isMarkByUser(int userId, int markId) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %d AND %s = %d", TABLE_MARKS, MARKS_USER_ID, userId, KEY_ID, markId);
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        if (c == null)
+            return false;
+
+        if (!c.moveToFirst())
+            return false;
+
         return true;
     }
 
@@ -882,6 +928,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(ARTICLES_LIKES, article.getLikes());
 
         db.update(TABLE_ARTICLES, values, KEY_ID + " = ?", new String[] { String.valueOf(article.getId()) });
+    }
+
+    /**********************************************************************************************
+     * MARKS FUNCTIONS
+     **********************************************************************************************/
+
+    @SuppressLint("Range")
+    public List<Mark> getMarks() {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s ORDER BY id DESC", TABLE_MARKS);
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        List<Mark> marks = new ArrayList<>();
+
+        if (c.moveToFirst()) {
+            do {
+                Mark mark = new Mark();
+                mark.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+                mark.setUserId(c.getInt(c.getColumnIndex(MARKS_USER_ID)));
+                mark.setType(c.getString(c.getColumnIndex(MARKS_TYPE)));
+                mark.setMessage(c.getString(c.getColumnIndex(MARKS_MESSAGE)));
+                mark.setLatitude(c.getDouble(c.getColumnIndex(MARKS_LATITUDE)));
+                mark.setLongitude(c.getDouble(c.getColumnIndex(MARKS_LONGITUDE)));
+                mark.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+                marks.add(mark);
+            } while (c.moveToNext());
+        }
+
+        c.close();
+
+        return marks;
+    }
+
+    public long createMark(Mark mark) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(MARKS_USER_ID, mark.getUserId());
+        values.put(MARKS_TYPE, mark.getType());
+        values.put(MARKS_MESSAGE, mark.getMessage());
+        values.put(MARKS_LATITUDE, mark.getLatitude());
+        values.put(MARKS_LONGITUDE, mark.getLongitude());
+        values.put(KEY_CREATED_AT, getDateTime());
+
+        long id = db.insert(TABLE_MARKS, null, values);
+
+        return id;
+    }
+
+    public void deleteMark(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_MARKS, KEY_ID + " = ?", new String[] { String.valueOf(id) });
     }
 
     /**********************************************************************************************

@@ -19,6 +19,11 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.planetgreece.db.DatabaseHelper;
+import com.example.planetgreece.db.model.Mark;
+import com.example.planetgreece.db.model.User;
+import com.example.planetgreece.fragment.Login.LoginTabFragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -37,27 +42,43 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback , GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
-    private FusedLocationProviderClient mLocationClient;
+    private DatabaseHelper db;
+
+    private User user;
+
     boolean isPermissionGranted;
-    GoogleMap mGoogleMap;
+    private FusedLocationProviderClient mLocationClient;
+    private GoogleMap mGoogleMap;
     private int GPS_REQUEST_CODE = 9001;
+    private ArrayList<LatLng> locations;
+
+    private Dialog dialog;
+    private TextView inputText;
+    private CheckBox infCheckBox;
+    private CheckBox impCheckBox;
+    private CheckBox danCheckBox;
     private ImageButton btnBack;
-    ArrayList<LatLng> locations;
-    Dialog dialog;
-    TextView inputText;
-    CheckBox infCheckBox;
-    CheckBox impCheckBox;
-    CheckBox danCheckBox;
 
     @SuppressLint({"UseCompatLoadingForDrawables", "VisibleForTests"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        db = DatabaseHelper.getInstance(getApplicationContext());
+
+        Intent intent = getIntent();
+        user = (User) intent.getSerializableExtra(LoginTabFragment.USER_OBJECT);
+
         locations = new ArrayList<>();
         dialog = new Dialog(MapsActivity.this);
         dialog.setContentView(R.layout.custom_dialog);
@@ -69,34 +90,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnBack = findViewById(R.id.btnLogout);
         btnBack.setOnClickListener(v -> finish());
 
-        Button okey = dialog.findViewById(R.id.btn_okay);
+        Button okay = dialog.findViewById(R.id.btn_okay);
         Button cancel = dialog.findViewById(R.id.btn_cancel);
-        
-        okey.setOnClickListener(new View.OnClickListener() {
+
+        okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View view = (View) v.getParent();
-                inputText = (TextView) view.findViewById(R.id.inputText);
-                infCheckBox = (CheckBox) view.findViewById(R.id.infCheckBox);
-                impCheckBox = (CheckBox) view.findViewById(R.id.impCheckBox);
-                danCheckBox = (CheckBox) view.findViewById(R.id.danCheckBox);
-                if(infCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),infCheckBox.getText().toString());
+
+                inputText = view.findViewById(R.id.inputText);
+                infCheckBox = view.findViewById(R.id.infCheckBox);
+                impCheckBox = view.findViewById(R.id.impCheckBox);
+                danCheckBox = view.findViewById(R.id.danCheckBox);
+
+                String message = inputText.getText().toString();
+                LatLng point = locations.get(locations.size() - 1);
+
+
+                if (infCheckBox.isChecked()) {
+                    String type = infCheckBox.getText().toString();
+                    createMarker(message, type);
+                    addMarkerToDb(message, type, point);
                     inputText.setText("");;
                     infCheckBox.setChecked(false);
                     dialog.dismiss();
-                }else if(impCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),impCheckBox.getText().toString());
+                } else if (impCheckBox.isChecked()) {
+                    String type = impCheckBox.getText().toString();
+                    createMarker(message, type);
+                    addMarkerToDb(message, type, point);
                     impCheckBox.setChecked(false);
                     inputText.setText("");;
                     dialog.dismiss();
-                }else if(danCheckBox.isChecked()){
-                    createMarker(inputText.getText().toString(),danCheckBox.getText().toString());
+                } else if (danCheckBox.isChecked()) {
+                    String type = danCheckBox.getText().toString();
+                    createMarker(message, type);
+                    addMarkerToDb(message, type, point);
                     inputText.setText("");;
                     danCheckBox.setChecked(false);
                     dialog.dismiss();
-                }else{
-                    Toast.makeText(MapsActivity.this, "Please Fill all the fields", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MapsActivity.this, "Please fill all the fields.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -105,13 +138,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 View view = (View) v.getParent();
-                inputText = (TextView) view.findViewById(R.id.inputText);
-                infCheckBox = (CheckBox) view.findViewById(R.id.infCheckBox);
-                impCheckBox = (CheckBox) view.findViewById(R.id.impCheckBox);
-                danCheckBox = (CheckBox) view.findViewById(R.id.danCheckBox);
+
+                inputText = view.findViewById(R.id.inputText);
+                infCheckBox = view.findViewById(R.id.infCheckBox);
+                impCheckBox = view.findViewById(R.id.impCheckBox);
+                danCheckBox = view.findViewById(R.id.danCheckBox);
+
                 infCheckBox.setChecked(false);
                 impCheckBox.setChecked(false);
                 danCheckBox.setChecked(false);
+
                 inputText.setText("");
                 int index = locations.size() - 1;
                 locations.remove(index);
@@ -119,26 +155,53 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-
-
         checkMyPermission();
         initMap();
         mLocationClient = new FusedLocationProviderClient(this);
     }
 
-    public void createMarker(String message,String type){
-        if (type.equals("Danger")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        }
-        if (type.equals("Information")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+    private void createMarker(String message, String type) {
+        if (type.equals("Danger")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(locations.get(locations.size() - 1))
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            );
         }
 
-        if(type.equals("Important")){
-            mGoogleMap.addMarker(new MarkerOptions().position(locations.get(locations.size() - 1)).title(type).snippet(message).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+        if (type.equals("Information")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(locations.get(locations.size() - 1))
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
+        }
+
+        if(type.equals("Important")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(locations.get(locations.size() - 1))
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+            );
         }
     }
 
+    private void addMarkerToDb(String message, String type, LatLng point) {
+        Mark mark = new Mark();
+        mark.setUserId(user.getId());
+        mark.setType(type);
+        mark.setMessage(message);
+        mark.setLatitude(point.latitude);
+        mark.setLongitude(point.longitude);
+
+        db.createMark(mark);
+    }
 
     @SuppressLint("NonConstantResourceId")
     public void onCheckboxClicked(View view) {
@@ -146,25 +209,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         View parent = (View) view.getParent();
         switch(view.getId()) {
             case R.id.infCheckBox:
-                if (checked){
-                    impCheckBox = (CheckBox) parent.findViewById(R.id.impCheckBox);
-                    danCheckBox = (CheckBox) parent.findViewById(R.id.danCheckBox);
+                if (checked) {
+                    impCheckBox = parent.findViewById(R.id.impCheckBox);
+                    danCheckBox = parent.findViewById(R.id.danCheckBox);
                     impCheckBox.setChecked(false);
                     danCheckBox.setChecked(false);
                     break;
                 }
             case R.id.impCheckBox:
-                if (checked){
-                    infCheckBox = (CheckBox) parent.findViewById(R.id.infCheckBox);
-                    danCheckBox = (CheckBox) parent.findViewById(R.id.danCheckBox);
+                if (checked) {
+                    infCheckBox = parent.findViewById(R.id.infCheckBox);
+                    danCheckBox = parent.findViewById(R.id.danCheckBox);
                     infCheckBox.setChecked(false);
                     danCheckBox.setChecked(false);
                     break;
                 }
             case R.id.danCheckBox:
-                if (checked){
-                    impCheckBox = (CheckBox) parent.findViewById(R.id.impCheckBox);
-                    infCheckBox = (CheckBox) parent.findViewById(R.id.infCheckBox);
+                if (checked) {
+                    impCheckBox = parent.findViewById(R.id.impCheckBox);
+                    infCheckBox = parent.findViewById(R.id.infCheckBox);
                     impCheckBox.setChecked(false);
                     infCheckBox.setChecked(false);
                     break;
@@ -173,8 +236,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void initMap() {
-        if(isPermissionGranted){
-            if (isGpsEnable()){
+        if (isPermissionGranted) {
+            if (isGpsEnable()) {
                 SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
                 supportMapFragment.getMapAsync(this);
             }
@@ -201,9 +264,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation(){
+    private void getCurrentLocation() {
         mLocationClient.getLastLocation().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 Location location = task.getResult();
                 gotoLocation(location.getLatitude(),location.getLongitude());
             }
@@ -212,7 +275,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void gotoLocation(double latitude, double longitude) {
         LatLng latLng = new LatLng(latitude,longitude);
-
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng,15);
         mGoogleMap.moveCamera(cameraUpdate);
@@ -233,7 +295,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Uri uri = Uri.fromParts("package",getPackageName(),"");
                 intent.setData(uri);
                 startActivity(intent);
-
             }
 
             @Override
@@ -255,6 +316,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialog.show();
             }
         });
+
+        // Java get current date
+        Date currentDate = new Date();
+
+        // Add all marks
+        ArrayList<Mark> marks = (ArrayList<Mark>) db.getMarks();
+
+        for (Mark mark : marks) {
+//            System.out.println(mark.getType());
+
+            // Delete marks after 1 day
+            Date markFinishDate = null;
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault());
+
+                Calendar c = Calendar.getInstance();
+                c.setTime(Objects.requireNonNull(dateFormat.parse(mark.getCreatedAt())));
+                c.add(Calendar.DATE, 1);
+                markFinishDate = c.getTime();
+
+                System.out.println("markFinishDate: " + markFinishDate.toString());
+                System.out.println("currentDate: " + currentDate.toString());
+
+                if (markFinishDate.before(currentDate)) {
+                    db.deleteMark(mark.getId());
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+//            System.out.println("Latitude: " + mark.getLatitude() + " - Longitude: " + mark.getLongitude());
+            locations.add(mark.getLatLng());
+            createMarker(mark.getMessage(), mark.getType());
+        }
     }
 
     @Override
@@ -281,10 +376,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             boolean providerEnable = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            if (providerEnable){
-                Toast.makeText(this, "GPS is enable", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this, "GPS in not enable", Toast.LENGTH_SHORT).show();
+            if (providerEnable) {
+                Toast.makeText(this, "GPS is enabled", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "GPS in not enabled", Toast.LENGTH_SHORT).show();
             }
         }
     }

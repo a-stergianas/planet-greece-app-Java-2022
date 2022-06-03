@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.example.planetgreece.BrowserActivity;
+import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.MapsActivity;
 import com.example.planetgreece.RecyclerViewInterface;
 import com.example.planetgreece.db.DatabaseHelper;
@@ -21,6 +22,7 @@ import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.adapter.ArticleAdapter;
+import com.example.planetgreece.fragment.Login.LoginTabFragment;
 
 import java.util.ArrayList;
 
@@ -84,7 +86,12 @@ public class HomeFragment extends Fragment implements RecyclerViewInterface {
         recyclerView = view.findViewById(R.id.rvArticles);
 
         btnMaps = view.findViewById(R.id.btnMaps);
-        btnMaps.setOnClickListener(v -> startActivity(new Intent (getActivity(), MapsActivity.class)));
+//        btnMaps.setOnClickListener(v -> startActivity(new Intent (getActivity(), MapsActivity.class)));
+        btnMaps.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), MapsActivity.class);
+            intent.putExtra(LoginTabFragment.USER_OBJECT, mUser);
+            startActivity(intent);
+        });
 
                 // Get articles from database
         articleList = (ArrayList<Article>) db.getArticles(mUser.getId());
