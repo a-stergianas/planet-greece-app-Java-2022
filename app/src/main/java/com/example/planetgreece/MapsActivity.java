@@ -324,8 +324,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ArrayList<Mark> marks = (ArrayList<Mark>) db.getMarks();
 
         for (Mark mark : marks) {
-//            System.out.println(mark.getType());
-
             // Delete marks after 1 day
             Date markFinishDate = null;
             try {
@@ -336,9 +334,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 c.add(Calendar.DATE, 1);
                 markFinishDate = c.getTime();
 
-                System.out.println("markFinishDate: " + markFinishDate.toString());
-                System.out.println("currentDate: " + currentDate.toString());
-
                 if (markFinishDate.before(currentDate)) {
                     db.deleteMark(mark.getId());
                 }
@@ -346,7 +341,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 e.printStackTrace();
             }
 
-//            System.out.println("Latitude: " + mark.getLatitude() + " - Longitude: " + mark.getLongitude());
             locations.add(mark.getLatLng());
             createMarker(mark.getMessage(), mark.getType());
         }
