@@ -34,6 +34,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -55,6 +56,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private User user;
 
+    private Marker currentMarker;
+    private Mark currentMarkerModel;
+
     boolean isPermissionGranted;
     private FusedLocationProviderClient mLocationClient;
     private GoogleMap mGoogleMap;
@@ -62,6 +66,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<LatLng> locations;
 
     private Dialog dialog;
+    private Dialog editDialog;
     private TextView inputText;
     private CheckBox infCheckBox;
     private CheckBox impCheckBox;
@@ -87,21 +92,89 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.setCancelable(false);
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
 
+        editDialog = new Dialog(MapsActivity.this);
+        editDialog.setContentView(R.layout.update_custom_dialog);
+        editDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.dialog_background));
+        editDialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        editDialog.setCancelable(false);
+        editDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+
         btnBack = findViewById(R.id.btnLogout);
         btnBack.setOnClickListener(v -> finish());
 
         Button okay = dialog.findViewById(R.id.btn_okay);
         Button cancel = dialog.findViewById(R.id.btn_cancel);
 
+        Button update = editDialog.findViewById(R.id.btn_update);
+        Button delete = editDialog.findViewById(R.id.btn_delete);
+        Button editCancel = editDialog.findViewById(R.id.btn_edit_cancel);
+
+        editCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editDialog.dismiss();
+            }
+        });
+
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Marker marker = getCurrentMarker();
+                LatLng latLng = marker.getPosition();
+                initFields(editDialog);
+
+                String message = inputText.getText().toString();
+
+//                marker.remove();
+                deleteMarker(marker);
+                if (infCheckBox.isChecked()) {
+                    String type = infCheckBox.getText().toString();
+                    updateMarker(latLng, message, type);
+                    addMarkerToDb(message, type, latLng);
+                    inputText.setText("");
+                    infCheckBox.setChecked(false);
+                    editDialog.dismiss();
+                } else if (impCheckBox.isChecked()) {
+                    String type = impCheckBox.getText().toString();
+                    updateMarker(latLng, message, type);
+                    addMarkerToDb(message, type, latLng);
+                    impCheckBox.setChecked(false);
+                    inputText.setText("");
+                    editDialog.dismiss();
+                } else if (danCheckBox.isChecked()) {
+                    String type = danCheckBox.getText().toString();
+                    updateMarker(latLng, message, type);
+                    addMarkerToDb(message, type, latLng);
+                    inputText.setText("");
+                    danCheckBox.setChecked(false);
+                    editDialog.dismiss();
+                } else {
+                    Toast.makeText(MapsActivity.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Marker marker = getCurrentMarker();
+//                marker.remove();
+                deleteMarker(marker);
+                editDialog.dismiss();
+            }
+        });
+
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = (View) v.getParent();
-
-                inputText = view.findViewById(R.id.inputText);
-                infCheckBox = view.findViewById(R.id.infCheckBox);
-                impCheckBox = view.findViewById(R.id.impCheckBox);
-                danCheckBox = view.findViewById(R.id.danCheckBox);
+//                View view = (View) v.getParent();
+//
+//                inputText = view.findViewById(R.id.inputText);
+//                infCheckBox = view.findViewById(R.id.infCheckBox);
+//                impCheckBox = view.findViewById(R.id.impCheckBox);
+//                danCheckBox = view.findViewById(R.id.danCheckBox);
+                initFields(dialog);
 
                 String message = inputText.getText().toString();
                 LatLng point = locations.get(locations.size() - 1);
@@ -137,16 +210,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = (View) v.getParent();
+                initFields(dialog);
 
-                inputText = view.findViewById(R.id.inputText);
-                infCheckBox = view.findViewById(R.id.infCheckBox);
-                impCheckBox = view.findViewById(R.id.impCheckBox);
-                danCheckBox = view.findViewById(R.id.danCheckBox);
-
-                infCheckBox.setChecked(false);
-                impCheckBox.setChecked(false);
-                danCheckBox.setChecked(false);
+                disableAllCheckBox();
 
                 inputText.setText("");
                 int index = locations.size() - 1;
@@ -158,6 +224,77 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         checkMyPermission();
         initMap();
         mLocationClient = new FusedLocationProviderClient(this);
+    }
+
+    private void deleteMarker(Marker marker) {
+        Mark mark = db.getMark(marker.getPosition().latitude, marker.getPosition().longitude, marker.getSnippet(), marker.getTitle());
+        if (mark == null)
+            throw new NullPointerException("Marker is null");
+        db.deleteMark(mark.getId());
+
+        marker.remove();
+    }
+
+    private void setCurrentMarker(Marker marker) {
+        Mark mark = db.getMark(marker.getPosition().latitude, marker.getPosition().longitude, marker.getSnippet(), marker.getTitle());
+        if (mark == null)
+            throw new NullPointerException("Marker is null");
+
+        currentMarkerModel = mark;
+        currentMarker = marker;
+    }
+
+    private Marker getCurrentMarker() {
+        return currentMarker;
+    }
+
+    private Mark getCurrentMarkerModel() {
+        return currentMarkerModel;
+    }
+
+    private void updateMarker(LatLng point, String message, String type) {
+        if (type.equals("Danger")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(point)
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            );
+        }
+
+        if (type.equals("Information")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(point)
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            );
+        }
+
+        if(type.equals("Important")) {
+            mGoogleMap.addMarker(
+                    new MarkerOptions()
+                            .position(point)
+                            .title(type)
+                            .snippet(message)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+            );
+        }
+    }
+
+    private void disableAllCheckBox(){
+        infCheckBox.setChecked(false);
+        impCheckBox.setChecked(false);
+        danCheckBox.setChecked(false);
+    }
+
+    private void initFields(Dialog dialog){
+        inputText = dialog.findViewById(R.id.inputText);
+        infCheckBox = dialog.findViewById(R.id.infCheckBox);
+        impCheckBox = dialog.findViewById(R.id.impCheckBox);
+        danCheckBox = dialog.findViewById(R.id.danCheckBox);
     }
 
     private void createMarker(String message, String type) {
@@ -309,11 +446,47 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mGoogleMap = googleMap;
         mGoogleMap.setMyLocationEnabled(true);
+
+        LatLng sydney = new LatLng(40.629269, 22.947412);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
+
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(@NonNull LatLng point) {
                 locations.add(point);
                 dialog.show();
+            }
+        });
+
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(@NonNull Marker marker) {
+                Mark mark = db.getMark(marker.getPosition().latitude, marker.getPosition().longitude, marker.getSnippet(), marker.getTitle());
+                if (mark == null || (mark.getUserId() != user.getId() && !user.getIsAdmin())) {
+                    return;
+                }
+
+                initFields(editDialog);
+
+                String type = marker.getTitle();
+
+                if (type.equals("Information")) {
+                    infCheckBox.setChecked(true);
+                    impCheckBox.setChecked(false);
+                    danCheckBox.setChecked(false);
+                } else if (type.equals("Danger")) {
+                    infCheckBox.setChecked(false);
+                    impCheckBox.setChecked(false);
+                    danCheckBox.setChecked(true);
+                } else if (type.equals("Important")) {
+                    infCheckBox.setChecked(false);
+                    impCheckBox.setChecked(true);
+                    danCheckBox.setChecked(false);
+                }
+
+                inputText.setText(marker.getSnippet());
+                setCurrentMarker(marker);
+                editDialog.show();
             }
         });
 

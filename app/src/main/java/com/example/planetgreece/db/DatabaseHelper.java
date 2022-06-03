@@ -24,7 +24,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final int DB_VERSION = 5;
+    private static final int DB_VERSION = 3;
 
     private static final String DB_NAME = "PlanetGreece.db";
 
@@ -933,6 +933,82 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**********************************************************************************************
      * MARKS FUNCTIONS
      **********************************************************************************************/
+
+    @SuppressLint("Range")
+    public Mark getMarkByLatLng(double latitude, double longitude) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %s AND %s = %s LIMIT 1",
+                TABLE_MARKS,
+                MARKS_LATITUDE,
+                latitude,
+                MARKS_LONGITUDE,
+                longitude
+        );
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
+
+        if (c.getCount() == 0)
+            return null;
+
+        Mark mark = new Mark();
+        mark.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+        mark.setUserId(c.getInt(c.getColumnIndex(MARKS_USER_ID)));
+        mark.setMessage(c.getString(c.getColumnIndex(MARKS_MESSAGE)));
+        mark.setType(c.getString(c.getColumnIndex(MARKS_TYPE)));
+        mark.setLatitude(c.getDouble(c.getColumnIndex(MARKS_LATITUDE)));
+        mark.setLongitude(c.getDouble(c.getColumnIndex(MARKS_LONGITUDE)));
+        mark.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+        c.close();
+
+        return mark;
+    }
+
+    @SuppressLint("Range")
+    public Mark getMark(double latitude, double longitude, String message, String type) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format(Locale.getDefault(), "SELECT * FROM %s WHERE %s = %s AND %s = %s AND %s = %s AND %s = %s",
+                TABLE_MARKS,
+                MARKS_LATITUDE,
+                latitude,
+                MARKS_LONGITUDE,
+                longitude,
+                MARKS_MESSAGE,
+                DatabaseUtils.sqlEscapeString(message),
+                MARKS_TYPE,
+                DatabaseUtils.sqlEscapeString(type)
+        );
+
+        @SuppressLint("Recycle") Cursor c = db.rawQuery(query, null);
+
+        if (c == null)
+            return null;
+
+        if (!c.moveToFirst())
+            return null;
+
+        if (c.getCount() == 0)
+            return null;
+
+        Mark mark = new Mark();
+        mark.setId(c.getInt(c.getColumnIndex(KEY_ID)));
+        mark.setUserId(c.getInt(c.getColumnIndex(MARKS_USER_ID)));
+        mark.setMessage(c.getString(c.getColumnIndex(MARKS_MESSAGE)));
+        mark.setType(c.getString(c.getColumnIndex(MARKS_TYPE)));
+        mark.setLatitude(c.getDouble(c.getColumnIndex(MARKS_LATITUDE)));
+        mark.setLongitude(c.getDouble(c.getColumnIndex(MARKS_LONGITUDE)));
+        mark.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
+
+        c.close();
+
+        return mark;
+    }
 
     @SuppressLint("Range")
     public List<Mark> getMarks() {
