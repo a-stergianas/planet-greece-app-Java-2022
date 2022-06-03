@@ -283,27 +283,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        mGoogleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        mGoogleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
-            public void onMapLongClick(@NonNull LatLng latLng) {
-                editDialog.show();
-            }
-        });
-
-        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(@NonNull Marker marker) {
+            public void onInfoWindowClick(@NonNull Marker marker) {
                 System.out.println("EDWW");
                 System.out.println(marker);
                 System.out.println(marker.getTitle());
                 System.out.println(marker.getSnippet());
                 System.out.println(marker.getPosition().latitude);
                 System.out.println(marker.getPosition().longitude);
-                System.out.println(locations.contains(marker.getPosition()));
-                System.out.println(locations);
-                return false;
+                editDialog.show();
             }
         });
+
     }
 
     @Override
