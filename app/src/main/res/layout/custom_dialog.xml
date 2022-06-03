@@ -16,12 +16,14 @@
         android:layout_marginBottom="19dp"
         android:buttonTint="@color/primary_green"
         android:checked="false"
-        android:text="Information"
         android:onClick="onCheckboxClicked"
+        android:text="Information"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toStartOf="@+id/impCheckBox"
+        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.0"
         tools:ignore="UsingOnClickInXml" />
 
     <CheckBox
@@ -31,13 +33,15 @@
         android:layout_marginTop="21dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="19dp"
-        android:text="Danger"
-        android:onClick="onCheckboxClicked"
         android:buttonTint="@color/primary_green"
+        android:onClick="onCheckboxClicked"
+        android:text="Danger"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.687"
         app:layout_constraintStart_toEndOf="@+id/impCheckBox"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <CheckBox
         android:id="@+id/impCheckBox"
@@ -97,14 +101,14 @@
     <EditText
         android:id="@+id/inputText"
         android:layout_width="300dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/edit_text_bg"
-        android:textColor="@color/primary_green"
+        android:inputType="text"
+        android:maxLength="20"
         android:paddingLeft="20dp"
         android:paddingRight="10dp"
-        android:maxLength="20"
-        android:inputType="text"
+        android:textColor="@color/primary_green"
         app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -144,7 +148,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
         android:stateListAnimator="@null"
         android:text="Okay"
@@ -152,7 +156,7 @@
         android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/divider" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
