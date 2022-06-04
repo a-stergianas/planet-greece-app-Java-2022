@@ -126,22 +126,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String message = inputText.getText().toString();
 
 //                marker.remove();
-                deleteMarker(marker);
-                if (infCheckBox.isChecked()) {
+
+                if (infCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
+                    deleteMarker(marker);
                     String type = infCheckBox.getText().toString();
                     createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
                     inputText.setText("");
                     infCheckBox.setChecked(false);
                     editDialog.dismiss();
-                } else if (impCheckBox.isChecked()) {
+                } else if (impCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
+                    deleteMarker(marker);
                     String type = impCheckBox.getText().toString();
                     createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
                     impCheckBox.setChecked(false);
                     inputText.setText("");
                     editDialog.dismiss();
-                } else if (danCheckBox.isChecked()) {
+                } else if (danCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
+                    deleteMarker(marker);
                     String type = danCheckBox.getText().toString();
                     createMarker(latLng, message, type);
                     addMarkerToDb(message, type, latLng);
@@ -168,33 +171,26 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         okay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                View view = (View) v.getParent();
-//
-//                inputText = view.findViewById(R.id.inputText);
-//                infCheckBox = view.findViewById(R.id.infCheckBox);
-//                impCheckBox = view.findViewById(R.id.impCheckBox);
-//                danCheckBox = view.findViewById(R.id.danCheckBox);
                 initFields(dialog);
-
                 String message = inputText.getText().toString();
                 LatLng point = locations.get(locations.size() - 1);
 
 
-                if (infCheckBox.isChecked()) {
+                if (infCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
                     String type = infCheckBox.getText().toString();
                     createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
                     inputText.setText("");;
                     infCheckBox.setChecked(false);
                     dialog.dismiss();
-                } else if (impCheckBox.isChecked()) {
+                } else if (impCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
                     String type = impCheckBox.getText().toString();
                     createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
                     impCheckBox.setChecked(false);
                     inputText.setText("");;
                     dialog.dismiss();
-                } else if (danCheckBox.isChecked()) {
+                } else if (danCheckBox.isChecked() && !inputText.getText().toString().equals("")) {
                     String type = danCheckBox.getText().toString();
                     createMarker(locations.get(locations.size() - 1), message, type);
                     addMarkerToDb(message, type, point);
@@ -211,9 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 initFields(dialog);
-
                 disableAllCheckBoxes();
-
                 inputText.setText("");
                 int index = locations.size() - 1;
                 locations.remove(index);
