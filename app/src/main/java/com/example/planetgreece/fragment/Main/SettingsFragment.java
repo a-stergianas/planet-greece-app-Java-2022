@@ -1,18 +1,14 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
-
+import androidx.fragment.app.Fragment;
 import com.example.planetgreece.R;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
-
 import java.util.ArrayList;
 
 /**

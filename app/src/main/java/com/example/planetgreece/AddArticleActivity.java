@@ -1,13 +1,11 @@
 package com.example.planetgreece;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;

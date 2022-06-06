@@ -1,7 +1,5 @@
 package com.example.planetgreece;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -11,6 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class BrowserActivity extends AppCompatActivity {
     private WebView webView;

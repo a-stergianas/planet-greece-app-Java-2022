@@ -8,12 +8,10 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-
 import com.example.planetgreece.common.Helper;
 import com.example.planetgreece.db.model.Article;
 import com.example.planetgreece.db.model.Mark;
 import com.example.planetgreece.db.model.User;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;

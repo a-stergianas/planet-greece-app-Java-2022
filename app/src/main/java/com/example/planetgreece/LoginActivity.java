@@ -1,10 +1,10 @@
 package com.example.planetgreece;
 
+import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import android.os.Bundle;
-
 import com.example.planetgreece.adapter.LoginAdapter;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

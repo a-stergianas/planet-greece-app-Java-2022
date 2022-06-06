@@ -1,27 +1,22 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.content.Intent;
-import android.location.GnssAntennaInfo;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.planetgreece.BrowserActivity;
-import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.MapsActivity;
+import com.example.planetgreece.R;
 import com.example.planetgreece.RecyclerViewInterface;
+import com.example.planetgreece.adapter.ArticleAdapter;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.Article;
-import com.example.planetgreece.R;
 import com.example.planetgreece.db.model.User;
-import com.example.planetgreece.adapter.ArticleAdapter;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
 
 import java.util.ArrayList;

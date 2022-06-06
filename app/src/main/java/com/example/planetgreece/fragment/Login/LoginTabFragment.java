@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
-
 import com.example.planetgreece.MainActivity;
 import com.example.planetgreece.R;
 import com.example.planetgreece.common.Helper;

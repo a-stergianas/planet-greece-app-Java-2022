@@ -1,28 +1,20 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.fragment.app.Fragment;
-
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.fragment.app.Fragment;
 import com.example.planetgreece.AddArticleActivity;
 import com.example.planetgreece.ChangePasswordActivity;
 import com.example.planetgreece.EditProfileActivity;
@@ -34,10 +26,6 @@ import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
 import com.mikhaellopez.circularimageview.CircularImageView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
