@@ -104,11 +104,9 @@ public class ProfileFragment extends Fragment {
         tvEmail = view.findViewById(R.id.tvEmail);
         ivProfile = view.findViewById(R.id.ivProfile);
 
-        Bitmap pfpPicture = new ImageSaver(getContext()).setFileName(mUser.getId() + ".png").load();
-        if (pfpPicture != null)
-            ivProfile.setImageBitmap(pfpPicture);
-
         mUser = db.getUser(mUser.getId());
+
+        loadProfilePicture();
 
         btnLogout = view.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
@@ -155,10 +153,6 @@ public class ProfileFragment extends Fragment {
             resultLauncher.launch(intent);
         });
 
-        ivProfile.setOnClickListener(v -> {
-            pfpChooser();
-        });
-
         tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());
         tvFirstName.setText(mUser.getFirstName());
         tvLastName.setText(mUser.getLastName());
@@ -167,12 +161,10 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    void pfpChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        resultLauncher.launch(intent);
-//        startActivityForResult(intent, Results.ProfilePictureChooser);
+    void loadProfilePicture() {
+        Bitmap pfpPicture = new ImageSaver(getContext()).setFileName(mUser.getId() + ".png").load();
+        if (pfpPicture != null)
+            ivProfile.setImageBitmap(pfpPicture);
     }
 
     ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
@@ -190,29 +182,12 @@ public class ProfileFragment extends Fragment {
                         tvFirstName.setText(mUser.getFirstName());
                         tvLastName.setText(mUser.getLastName());
                         tvEmail.setText(mUser.getEmail());
+
+                        loadProfilePicture();
                     }
 
                     if (result.getResultCode() == Results.ChangedPassword.ordinal()) {
                         System.out.println("Changed password.");
-                    }
-
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        System.out.println("PFP changed.");
-                        Intent data = result.getData();
-                        if (data != null && data.getData() != null) {
-                            Uri selectedImageUri = data.getData();
-                            Bitmap selectedImageBitmap = null;
-                            try {
-                                selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
-                            }
-                            catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            ivProfile.setImageBitmap(selectedImageBitmap);
-                            new ImageSaver(getContext())
-                                    .setFileName(mUser.getId() + ".png")
-                                    .save(selectedImageBitmap);
-                        }
                     }
                 }
             }
