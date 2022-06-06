@@ -1,7 +1,12 @@
 package com.example.planetgreece.fragment.Main;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
@@ -10,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +28,16 @@ import com.example.planetgreece.ChangePasswordActivity;
 import com.example.planetgreece.EditProfileActivity;
 import com.example.planetgreece.LoginActivity;
 import com.example.planetgreece.R;
+import com.example.planetgreece.common.ImageSaver;
 import com.example.planetgreece.common.Results;
 import com.example.planetgreece.db.DatabaseHelper;
 import com.example.planetgreece.db.model.User;
 import com.example.planetgreece.fragment.Login.LoginTabFragment;
+import com.mikhaellopez.circularimageview.CircularImageView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -47,6 +59,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvEmail;
     private Button btnEditProfile;
     private Button btnChangePassword;
+    private CircularImageView ivProfile;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -89,6 +102,11 @@ public class ProfileFragment extends Fragment {
         tvFirstName = view.findViewById(R.id.tvFirstname);
         tvLastName = view.findViewById(R.id.tvLastname);
         tvEmail = view.findViewById(R.id.tvEmail);
+        ivProfile = view.findViewById(R.id.ivProfile);
+
+        Bitmap pfpPicture = new ImageSaver(getContext()).setFileName(mUser.getId() + ".png").load();
+        if (pfpPicture != null)
+            ivProfile.setImageBitmap(pfpPicture);
 
         mUser = db.getUser(mUser.getId());
 
@@ -137,12 +155,24 @@ public class ProfileFragment extends Fragment {
             resultLauncher.launch(intent);
         });
 
+        ivProfile.setOnClickListener(v -> {
+            pfpChooser();
+        });
+
         tvFullName.setText(mUser.getFirstName() + " " + mUser.getLastName());
         tvFirstName.setText(mUser.getFirstName());
         tvLastName.setText(mUser.getLastName());
         tvEmail.setText(mUser.getEmail());
 
         return view;
+    }
+
+    void pfpChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        resultLauncher.launch(intent);
+//        startActivityForResult(intent, Results.ProfilePictureChooser);
     }
 
     ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
@@ -164,6 +194,25 @@ public class ProfileFragment extends Fragment {
 
                     if (result.getResultCode() == Results.ChangedPassword.ordinal()) {
                         System.out.println("Changed password.");
+                    }
+
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        System.out.println("PFP changed.");
+                        Intent data = result.getData();
+                        if (data != null && data.getData() != null) {
+                            Uri selectedImageUri = data.getData();
+                            Bitmap selectedImageBitmap = null;
+                            try {
+                                selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), selectedImageUri);
+                            }
+                            catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            ivProfile.setImageBitmap(selectedImageBitmap);
+                            new ImageSaver(getContext())
+                                    .setFileName(mUser.getId() + ".png")
+                                    .save(selectedImageBitmap);
+                        }
                     }
                 }
             }
