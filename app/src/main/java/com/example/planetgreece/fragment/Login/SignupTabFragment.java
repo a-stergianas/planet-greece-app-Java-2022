@@ -46,7 +46,12 @@ public class SignupTabFragment extends Fragment {
             String password = password_signup.getText().toString();
 
 //                Toast.makeText(getContext(), "Signup button clicked", Toast.LENGTH_LONG).show();
-            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            if (firstName == null
+                    || lastName == null
+                    || firstName.isEmpty()
+                    || lastName.isEmpty()
+                    || email.isEmpty()
+                    || password.isEmpty()) {
                 Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_LONG).show();
                 return;
             }

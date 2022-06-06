@@ -91,6 +91,11 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
         int articleId = articlesList.get(position).getId();
 
+        // If the title is too long, only display the first 90 characters
+        if (title.length() > 90) {
+            title = title.substring(0, 90) + "...";
+        }
+
         viewHolder.title.setText(title);
 //        viewHolder.imageView.setImageResource(image);
         Picasso.get().load(image).into(viewHolder.imageView);
