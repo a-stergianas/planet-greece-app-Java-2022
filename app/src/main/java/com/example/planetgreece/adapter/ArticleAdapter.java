@@ -87,7 +87,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 createdAt = articlesList.get(position).getCreatedAt(),
                 image = articlesList.get(position).getImage();
         // transforming int likes to final int array so we can update it inside the onClick listener
-        final int[] likes = { articlesList.get(position).getLikes() };
+        int likes = articlesList.get(position).getLikes();
 
         int articleId = articlesList.get(position).getId();
 
@@ -102,13 +102,17 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         viewHolder.site.setText(siteName);
 
         viewHolder.date.setText(createdAt.substring(0, 10)); // only 10 first characters which equals only the date without the time
-        viewHolder.likes.setText(likes[0] + " likes");
+        viewHolder.likes.setText(likes + " likes");
 
         if (db.isArticleInSaved(userId, articleId))
             viewHolder.btnSave.setImageTintList(ContextCompat.getColorStateList(viewHolder.btnSave.getContext(), R.color.secondary_green));
+        else
+            viewHolder.btnSave.setImageTintList(ContextCompat.getColorStateList(viewHolder.btnLike.getContext(), R.color.white));
 
         if (db.isArticleInLiked(userId, articleId))
             viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(viewHolder.btnLike.getContext(), R.color.secondary_green));
+        else
+            viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(viewHolder.btnLike.getContext(), R.color.white));
 
         viewHolder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,15 +134,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             public void onClick(View v) {
                 if (!db.isArticleInLiked(userId, articleId)) {
                     db.addArticleToLiked(userId, articleId);
+                    articlesList.get(position).incrementLikes();
                     viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.secondary_green));
-                    likes[0] = likes[0] + 1;
                     // unnecessary toast message
                 } else {
                     db.removeArticleFromLiked(userId, articleId);
+                    articlesList.get(position).decrementLikes();
                     viewHolder.btnLike.setImageTintList(ContextCompat.getColorStateList(v.getContext(), R.color.white));
-                    likes[0] = likes[0] - 1;
                 }
-                viewHolder.likes.setText(likes[0] + " likes");
+                viewHolder.likes.setText(articlesList.get(position).getLikes() + " likes");
             }
         });
     }
